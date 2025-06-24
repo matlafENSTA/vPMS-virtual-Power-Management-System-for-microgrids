@@ -1,0 +1,13 @@
+# binary files
+*.exe
+*.xlsx
+
+# data folders
+input/*.csv
+output/*
+output_saved/*
+
+# others
+__pycache__/*
+*.pyc
+venv/*
