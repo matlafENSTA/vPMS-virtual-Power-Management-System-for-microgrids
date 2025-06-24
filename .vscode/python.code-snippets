@@ -1,0 +1,18 @@
+{
+    "HEADER":{
+		"prefix": "header",
+		"body": [
+		"# -*- coding:utf-8 -*-",
+		"'''",
+		":Created: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND",
+		":Project: virtual PMS for microgrids",
+		":Version: 1.0",
+		":Author: Mathieu Lafitte",
+		":Description: ",
+		"'''",
+		"#---------------------",
+		"#%%\n",
+		"$0"
+	],
+	}
+}

@@ -1,0 +1,546 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>virtualPMS.BatteryStock &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README_doc.html">vPMS - Virtual Power Management System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">virtualPMS_WD</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">virtualPMS.BatteryStock</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for virtualPMS.BatteryStock</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">:Created: 2025-06-19 10:40:01</span>
+<span class="sd">:Project: virtual PMS for microgrids</span>
+<span class="sd">:Version: 1.0</span>
+<span class="sd">:Author: Mathieu Lafitte</span>
+<span class="sd">:Description: Battery Stock Management. A &quot;BatteryStock&quot; object is a list of &quot;Battery&quot; Objects. Includes charge and discharge routines, cost functions and test section. </span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1">#---------------------</span>
+<span class="c1">#%%</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span> <span class="c1"># add the entire module to python path</span>
+
+<span class="kn">from</span> <span class="nn">virtualPMS.Battery</span> <span class="kn">import</span> <span class="n">Battery</span>
+<span class="kn">from</span> <span class="nn">virtualPMS.Grid</span> <span class="kn">import</span> <span class="n">Grid</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<div class="viewcode-block" id="BatteryStock">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock">[docs]</a>
+<span class="k">class</span> <span class="nc">BatteryStock</span><span class="p">:</span>    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">battery_stock</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Battery</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;initiate a battery stock. See Battery.py for more info on the modelling of a single battery.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            battery_stock (list[Battery]): list of &#39;Battery&#39; objects previously defined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span> <span class="o">=</span> <span class="n">battery_stock</span>
+
+<div class="viewcode-block" id="BatteryStock.battery_stock_charge">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.battery_stock_charge">[docs]</a>
+    <span class="k">def</span> <span class="nf">battery_stock_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;charge the batteries from the lower to the upper SOC.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            power (float): the power not being used by the load (in most cases = P_green - P_L &gt; 0) in kW</span>
+<span class="sd">            dt (float): charging time (= 1 time step), in hours</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: &gt;=0 cumulated power input of the battery stock, in kW.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">power</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">batt_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">P_remaining</span> <span class="o">=</span> <span class="n">power</span> <span class="c1"># power still usable for charging batteries</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">batt_sorted</span><span class="p">:</span>
+            <span class="c1"># print(&#39;charge of   &#39;, [name for name, value in globals().items() if value is battery_stock[t[0]]], &#39;; power still available :&#39;, P_remaining, &#39;W&#39;)</span>
+            <span class="c1"># charge the battery that has the lowest SOC and update the remaining power</span>
+            <span class="n">P_remaining</span> <span class="o">-=</span> <span class="n">b</span><span class="o">.</span><span class="n">battery_charge</span><span class="p">(</span><span class="n">P_remaining</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">P_remaining</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">power</span> <span class="o">-</span> <span class="n">P_remaining</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.battery_stock_discharge">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.battery_stock_discharge">[docs]</a>
+    <span class="k">def</span> <span class="nf">battery_stock_discharge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;discharge the batteries from the upper to the lower SOC.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            power (float): the power needed by the load (in most cases = P_L - P_green &gt; 0) in kW</span>
+<span class="sd">            dt (float): discharging time (= 1 time step), in hours</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float: &gt;=0 the cumulated power output of the battery stock, in kW. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">power</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">batt_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">P_remaining</span> <span class="o">=</span> <span class="n">power</span> <span class="c1"># power still needed by the load</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">batt_sorted</span><span class="p">:</span>
+            <span class="c1"># discharge the battery that has the highest SOC and update the remaining power</span>
+            <span class="n">P_remaining</span> <span class="o">-=</span> <span class="n">b</span><span class="o">.</span><span class="n">battery_discharge</span><span class="p">(</span><span class="n">P_remaining</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="c1"># print(&#39;P_bat =&#39;,P_rem_debug - P_remaining, &#39;; power still needed:&#39;, P_remaining, &#39;kW&#39;)</span>
+            <span class="k">if</span> <span class="n">P_remaining</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">power</span> <span class="o">-</span> <span class="n">P_remaining</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.sort_batteries">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.sort_batteries">[docs]</a>
+    <span class="k">def</span> <span class="nf">sort_batteries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span> <span class="c1"># unused</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;sorts a list of batteries in order to charge or discharge them following the given criteria.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            criteria (str): choose among a list of pre-made criterias to sort batteries</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of battery objects: the batteries sorted with the criteria or battery_stock if the criteria was not understood</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crit_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;socmin&#39;</span><span class="p">,</span> <span class="s1">&#39;socmax&#39;</span><span class="p">,</span> <span class="s1">&#39;capacity&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">criteria</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">crit_list</span><span class="p">:</span>
+            <span class="c1"># print(&#39;!! criteria not understood !! choose among the following :&#39;+crit_list)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># print(&#39;else&#39;)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.get_SOC">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.get_SOC">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_SOC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">which</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;soc&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;for a given stock of many batteries, calculates the overall SOC by processing a weighted average.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            which (str): &#39;soc&#39; for current/real SOC</span>
+<span class="sd">                         &#39;min&#39; for minimum SOC</span>
+<span class="sd">                         &#39;max&#39; for maximum SOC</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: SOC of the entire battery stock (weighted average).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">which</span> <span class="o">=</span> <span class="n">which</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;soc&#39;</span><span class="p">,</span><span class="s1">&#39;min&#39;</span><span class="p">,</span><span class="s1">&#39;max&#39;</span><span class="p">])</span>
+
+        <span class="n">var_tot</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">capa_tot</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">:</span>
+            <span class="n">capa_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+            <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;soc&#39;</span><span class="p">:</span>             <span class="c1"># real/current SOC</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOC</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+            <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>           <span class="c1"># SOCmin</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmin</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+            <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>           <span class="c1"># SOCmax</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmax</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>            
+        <span class="n">var_tot</span> <span class="o">=</span> <span class="n">var_tot</span> <span class="o">/</span> <span class="n">capa_tot</span> <span class="k">if</span> <span class="n">capa_tot</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">var_tot</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.get_Pmax">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.get_Pmax">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_Pmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            dt (float): discharging time (= 1 time step), in hours</span>
+<span class="sd">            which (str): if &#39;ch&#39;, returns the maximum charge power that can store the battery stock during dt</span>
+<span class="sd">                         if &#39;dis&#39;, returns the maximum discharge power that can supply the battery stock during dt</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: maximum charge or discharge power for the considered time step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">which</span> <span class="o">=</span> <span class="n">which</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ch&#39;</span><span class="p">,</span><span class="s1">&#39;dis&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;ch&#39;</span><span class="p">:</span>
+            <span class="n">e_needed</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">power_max_inst</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">:</span>
+                <span class="n">e_needed</span> <span class="o">+=</span> <span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOCmax</span> <span class="o">-</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOC</span><span class="p">)</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+                <span class="k">if</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOC</span> <span class="o">&lt;</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmax</span><span class="p">:</span>
+                    <span class="n">power_max_inst</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">Pmax_ch</span>
+            <span class="n">Pmax_ch</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">e_needed</span> <span class="o">/</span> <span class="n">dt</span><span class="p">,</span> <span class="n">power_max_inst</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Pmax_ch</span>
+        <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;dis&#39;</span><span class="p">:</span>
+            <span class="n">e_available</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">power_max_inst</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">:</span>
+                <span class="n">e_available</span> <span class="o">+=</span> <span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOC</span> <span class="o">-</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">eta</span>
+                <span class="k">if</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOC</span> <span class="o">&gt;</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmin</span><span class="p">:</span>
+                    <span class="n">power_max_inst</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">Pmax_disch</span>
+            <span class="c1"># print(&quot;SOClim_pow&quot;,e_available / dt, &quot;inst_lim_pow&quot;, power_max_inst)</span>
+            <span class="n">Pmax_dis</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">e_available</span> <span class="o">/</span> <span class="n">dt</span><span class="p">,</span> <span class="n">power_max_inst</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Pmax_dis</span></div>
+
+        
+<div class="viewcode-block" id="BatteryStock.get_Pbat">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.get_Pbat">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_Pbat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># unused</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;simulates the charge (power&gt;0) or discharge (power&lt;0) of the battery stock and returns the remaining power</span>
+<span class="sd">        NB : SOCs are NOT uploaded within this function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            power (float): power demand in kW : if power &gt; 0, batteries will be charged</span>
+<span class="sd">                                                if power &lt; 0, batteries will be discharged</span>
+<span class="sd">            dt (float&gt;0): duration of the time step in hours</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: P_bat if =0, batteries can be fully charged / can supply the load demand</span>
+<span class="sd">                                    if &gt;0, batteries cannot use all the power to charge / cannot supply all the load demand</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">virtual_stock</span> <span class="o">=</span> <span class="n">BatteryStock</span><span class="p">([</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">power</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">P_batt_stock</span> <span class="o">=</span> <span class="n">virtual_stock</span><span class="o">.</span><span class="n">battery_stock_charge</span><span class="p">(</span> <span class="n">power</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">power</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">P_batt_stock</span> <span class="o">=</span> <span class="n">virtual_stock</span><span class="o">.</span><span class="n">battery_stock_discharge</span><span class="p">(</span> <span class="o">-</span><span class="n">power</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">P_batt_stock</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">P_batt_stock</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.get_var">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.get_var">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the value of any other battery variable non reachable using get_SOC or get_Pmax.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            which (str): &#39;capacity&#39; for overall capacity</span>
+<span class="sd">                         &#39;eta&#39; for overall energy efficiency</span>
+<span class="sd">                         &#39;ReplacementCost&#39; for total replacement cost</span>
+<span class="sd">                         &#39;MaintenanceCost&#39; for total maintenance cost.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: equivalent variable for the battery stock</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">which</span> <span class="o">=</span> <span class="n">which</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">which</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;capacity&#39;</span><span class="p">,</span> <span class="s1">&#39;eta&#39;</span><span class="p">,</span> <span class="s1">&#39;replacementcost&#39;</span><span class="p">,</span> <span class="s1">&#39;maintenancecost&#39;</span><span class="p">])</span>
+        
+        <span class="n">capa_tot</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">var_tot</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">:</span>
+            <span class="n">capa_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+            <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;capacity&#39;</span><span class="p">:</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+            <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;ReplacementCost&#39;</span><span class="p">:</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">ReplacementCost</span>
+            <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;MaintenanceCost&#39;</span><span class="p">:</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">MaintenanceCost</span>
+            <span class="k">elif</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;eta&#39;</span><span class="p">:</span>
+                <span class="n">var_tot</span> <span class="o">+=</span> <span class="n">batt</span><span class="o">.</span><span class="n">eta</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">capacity</span>
+        <span class="k">return</span> <span class="n">var_tot</span> <span class="o">/</span> <span class="n">capa_tot</span> <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;eta&#39;</span> <span class="k">else</span> <span class="n">var_tot</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.charge_cost">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.charge_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">charge_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_comp</span><span class="p">:</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">forecast</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">charac_period</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># charging batteries</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;calculates the cost of charging batteries. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            grid_comp (&#39;Grid&#39; object): the grid (if the microgrid is connected to it)</span>
+<span class="sd">            time_step (int): index of the for loop (used to know if the grid is reliable or not)</span>
+<span class="sd">            dt (float): duration of the time step, in hours</span>
+<span class="sd">            active (bool): if True, the DG is being used normally</span>
+<span class="sd">                            if False, the DG is NOT being used.</span>
+<span class="sd">            forecast (bool, optional): if True, future data will be used to dispatch power,</span>
+<span class="sd">                                       if False, only current and past data will be used.</span>
+<span class="sd">            charac_period (int, optional): (Defaults to 0, use only when forecast == True) based on the duration of battery charging and forecast abilities, </span>
+<span class="sd">                            charac_period is the future period of time the function is allowed to look at in order to anticipate dispatching, in hours. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: cost of batteries charging in euro/kWh (0 &lt;= c &lt;= +inf)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">forecast</span><span class="p">:</span>
+            <span class="n">charac_period</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">current_soc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">()</span>
+        <span class="n">socmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+        <span class="n">GridState</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">grid_comp</span><span class="o">.</span><span class="n">state</span><span class="p">,</span><span class="n">grid_comp</span><span class="o">.</span><span class="n">state</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">charac_period</span><span class="o">/</span><span class="n">dt</span><span class="p">)]))</span>
+        <span class="k">if</span> <span class="n">current_soc</span> <span class="o">==</span> <span class="n">socmax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># print(GridState[time_step : time_step + int(charac_period/dt)])</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">GridState</span><span class="p">[</span><span class="n">time_step</span> <span class="p">:</span> <span class="n">time_step</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">charac_period</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span> <span class="c1"># in the next *charac_period* hours, the grid will be cut-off</span>
+                <span class="k">return</span> <span class="mf">10e10</span> <span class="c1"># batteries really should be used</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">grid_comp</span><span class="o">.</span><span class="n">prices</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># peak-hours price (&#39;2&#39;), buying (&#39;1&#39;)</span></div>
+
+
+<div class="viewcode-block" id="BatteryStock.discharge_cost">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.BatteryStock.BatteryStock.discharge_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">discharge_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_comp</span><span class="p">:</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># discharging batteries</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;calculates the cost of discharging the battery stock knowing the energy needed (power*dt). NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            grid_comp (grid object): the grid (if the microgrid is connected to it).</span>
+<span class="sd">            power (float): power demand in kW</span>
+<span class="sd">            dt (float): duration of the time step, in hours</span>
+<span class="sd">            active (bool): if True, the DG is being used normally</span>
+<span class="sd">                            if False, the DG is NOT being used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: cost of batteries discharging in euro/kWh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        
+        <span class="n">capa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s1">&#39;capacity&#39;</span><span class="p">)</span>
+        <span class="n">capa_eta_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">batt</span><span class="o">.</span><span class="n">capacity</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">eta</span> <span class="o">*</span> <span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOCmax</span> <span class="o">-</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmin</span><span class="p">)</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+        
+        <span class="c1"># lifetime of the battery stock in kWh</span>
+        <span class="n">lifetime_avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">batt</span><span class="o">.</span><span class="n">capacity</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">eta</span> <span class="o">*</span> <span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOCmax</span> <span class="o">-</span> <span class="n">batt</span><span class="o">.</span><span class="n">SOCmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">batt</span><span class="o">.</span><span class="n">lifetime</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+        
+        <span class="n">ReplacementCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s1">&#39;ReplacementCost&#39;</span><span class="p">)</span>
+        <span class="n">MaintenanceCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s1">&#39;MaintenanceCost&#39;</span><span class="p">)</span>
+
+        <span class="n">cost</span> <span class="o">=</span> <span class="n">grid_comp</span><span class="o">.</span><span class="n">prices</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">capa_eta_sum</span> <span class="o">*</span> <span class="n">capa</span> <span class="o">+</span> <span class="n">ReplacementCost</span> <span class="o">/</span> <span class="n">lifetime_avg</span> <span class="o">+</span> <span class="n">MaintenanceCost</span>
+        <span class="c1"># available_power = get_Pbat(battery_stock, power, dt)</span>
+        <span class="c1"># print(&#39;av_pow&#39;,available_power,&#39;grid&#39;,grid_comp.prices[2,1],&#39;capaetesum&#39;,capa_eta_sum,&#39;capa&#39;,capa,&#39;repl&#39;,ReplacementCost,&#39;lifetime_avg&#39;,lifetime_avg,&#39;maint&#39;,MaintenanceCost, &#39;cost&#39;, cost)</span>
+        <span class="k">if</span> <span class="n">power</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;dis&#39;</span><span class="p">):</span>
+        <span class="c1"># if available_power == power:</span>
+            <span class="k">return</span> <span class="n">cost</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">10e10</span> <span class="c1"># batteries shouldn&#39;t be used but they could</span></div>
+</div>
+
+
+<span class="c1"># test section</span>
+<span class="c1"># -----------------------------------------------------------------</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; --- testing the battery stock model ---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Input parameter</span>
+    <span class="n">paramIn_batt</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;capacity&#39;</span><span class="p">:</span><span class="mi">800</span><span class="p">,</span>
+              <span class="s1">&#39;SOC&#39;</span><span class="p">:</span><span class="mf">0.2</span><span class="p">,</span> 
+              <span class="s1">&#39;SOCmin&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span>
+              <span class="s1">&#39;SOCmax&#39;</span><span class="p">:</span><span class="mf">0.9</span><span class="p">,</span>
+              <span class="s1">&#39;eta&#39;</span><span class="p">:</span><span class="mf">0.8</span><span class="p">,</span>
+              <span class="s1">&#39;Pmax_ch&#39;</span><span class="p">:</span><span class="mi">200</span><span class="p">,</span>
+              <span class="s1">&#39;Pmax_disch&#39;</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span>
+              <span class="s1">&#39;lifetime&#39;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span>
+              <span class="s1">&#39;ReplacementCost&#39;</span><span class="p">:</span><span class="mi">10000</span><span class="p">,</span>
+              <span class="s1">&#39;MaintenanceCost&#39;</span><span class="p">:</span><span class="mf">0.03</span><span class="p">}</span>
+
+    <span class="n">battery_1</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+    <span class="n">battery_2</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+    <span class="n">battery_3</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># test duration in hours</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dt =&quot;</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="s2">&quot;hours</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;energy efficiency test with one charge - discharge cycle for&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="n">battery_1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># power &gt; 0</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initial SOC     =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">battery_1</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">P_charge_single_real</span> <span class="o">=</span> <span class="n">battery_1</span><span class="o">.</span><span class="n">battery_charge</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;power supply =&#39;</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="s1">&#39; battery charging power     =&#39;</span><span class="p">,</span><span class="n">P_charge_single_real</span><span class="p">,</span><span class="s1">&#39; charged SOC     =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">battery_1</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">P_disch_single_real</span> <span class="o">=</span> <span class="n">battery_1</span><span class="o">.</span><span class="n">battery_discharge</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;power demand =&#39;</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="s1">&#39; battery discharging power   =&#39;</span><span class="p">,</span> <span class="n">P_disch_single_real</span><span class="p">,</span><span class="s1">&#39; discharged SOC  =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">battery_1</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># power = 0</span>
+    <span class="n">P_charge_single_real</span> <span class="o">=</span> <span class="n">battery_1</span><span class="o">.</span><span class="n">battery_charge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;power supply =&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39; battery charging power    =&#39;</span><span class="p">,</span><span class="n">P_charge_single_real</span><span class="p">,</span><span class="s1">&#39; charged SOC    =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">battery_1</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">P_disch_single_real</span> <span class="o">=</span> <span class="n">battery_1</span><span class="o">.</span><span class="n">battery_discharge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;power demand =&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39; battery discharging power =&#39;</span><span class="p">,</span> <span class="n">P_disch_single_real</span><span class="p">,</span><span class="s1">&#39; discharged SOC =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">battery_1</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+ 
+    <span class="n">bat_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">battery_1</span><span class="p">,</span>
+                <span class="n">battery_2</span><span class="p">,</span>
+                <span class="n">battery_3</span>
+                <span class="p">]</span>
+
+    <span class="n">BattStock</span> <span class="o">=</span> <span class="n">BatteryStock</span><span class="p">(</span><span class="n">bat_list</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initial SOCs    =&#39;</span><span class="p">,[</span><span class="nb">round</span><span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock SOCmax    =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">)),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock SOCmin    =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">)),</span><span class="mi">3</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock capacity  =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span> <span class="s1">&#39;capacity&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pmax charge     =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;ch&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pmax discharge  =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;dis&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pbat charge     =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pbat</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;ch&#39;</span><span class="p">),</span> <span class="n">dt</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pbat discharge  =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pbat</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;dis&#39;</span><span class="p">),</span> <span class="n">dt</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">bat_list</span><span class="p">:</span>
+        <span class="n">batt</span><span class="o">.</span><span class="n">SOC</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">soc_init</span> <span class="o">=</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">()</span>
+    
+    <span class="c1"># cycles of charge - discharge</span>
+    <span class="n">n_cycles</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">P_charge_tank</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">P_disch_tank</span> <span class="o">=</span> <span class="n">P_charge_tank</span> <span class="o">*</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="s1">&#39;eta&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">energy efficiency test with&quot;</span><span class="p">,</span> <span class="n">n_cycles</span><span class="p">,</span> <span class="s2">&quot;charge - discharge cycles for&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">)])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SOCs uploaded&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initial SOCs       =&#39;</span><span class="p">,[</span><span class="nb">round</span><span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initial stock SOC  =&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">soc_init</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock SOCmax       =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock SOCmin       =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;stock capacity     =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span> <span class="s1">&#39;capacity&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pmax charge        =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;ch&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pmax discharge     =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;dis&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pbat charge        =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pbat</span><span class="p">(</span> <span class="mi">2</span><span class="o">*</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;ch&#39;</span><span class="p">),</span> <span class="n">dt</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pbat discharge     =&quot;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pbat</span><span class="p">(</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_Pmax</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;dis&#39;</span><span class="p">),</span> <span class="n">dt</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">charging power  =&quot;</span><span class="p">,</span> <span class="n">P_charge_tank</span><span class="p">,</span> <span class="s2">&quot;discharging power =&quot;</span><span class="p">,</span> <span class="n">P_disch_tank</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_cycles</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ~~~ cycle&quot;</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">P_charge_tank_real</span> <span class="o">=</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock_charge</span><span class="p">(</span><span class="n">P_charge_tank</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;battery charging power =&#39;</span><span class="p">,</span><span class="n">P_charge_tank_real</span><span class="p">,</span><span class="s1">&#39;charged SOCs =&#39;</span><span class="p">,[</span><span class="nb">round</span><span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;stock SOC              =&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;soc&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">P_disch_tank_real</span> <span class="o">=</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock_discharge</span><span class="p">(</span><span class="n">P_disch_tank</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;battery discharging power  =&#39;</span><span class="p">,</span> <span class="n">P_disch_tank_real</span><span class="p">,</span><span class="s1">&#39;discharged SOCs =&#39;</span><span class="p">,[</span><span class="nb">round</span><span class="p">(</span><span class="n">batt</span><span class="o">.</span><span class="n">SOC</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">batt</span> <span class="ow">in</span> <span class="n">BattStock</span><span class="o">.</span><span class="n">battery_stock</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;stock SOC                  =&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">(</span><span class="s1">&#39;soc&#39;</span><span class="p">),</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">BattStock</span><span class="o">.</span><span class="n">get_SOC</span><span class="p">()</span> <span class="o">==</span> <span class="n">soc_init</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; --- costs functions tests ---&quot;</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># sampling period in hours</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">20</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="c1"># 20 hours</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)])</span>
+    
+    <span class="c1"># grid</span>
+    <span class="n">GridState</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_steps</span> <span class="o">-</span> <span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># grid reliable or not at t</span>
+    <span class="n">GridTest</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="n">GridState</span><span class="p">,</span>  <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Grid</span><span class="o">.</span><span class="n">GridPricesRef</span><span class="p">),</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Grid</span><span class="o">.</span><span class="n">GridScheduleRef</span><span class="p">))</span>
+
+    <span class="c1"># batteries</span>
+    <span class="n">paramIn_batt</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;capacity&#39;</span><span class="p">:</span><span class="mi">800</span><span class="p">,</span>
+                    <span class="s1">&#39;SOC&#39;</span><span class="p">:</span><span class="mf">0.2</span><span class="p">,</span> 
+                    <span class="s1">&#39;SOCmin&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span>
+                    <span class="s1">&#39;SOCmax&#39;</span><span class="p">:</span><span class="mf">0.9</span><span class="p">,</span>
+                    <span class="s1">&#39;eta&#39;</span><span class="p">:</span><span class="mf">0.8</span><span class="p">,</span>
+                    <span class="s1">&#39;Pmax_ch&#39;</span><span class="p">:</span><span class="mi">200</span><span class="p">,</span>
+                    <span class="s1">&#39;Pmax_disch&#39;</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span>
+                    <span class="s1">&#39;lifetime&#39;</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span>
+                    <span class="s1">&#39;ReplacementCost&#39;</span><span class="p">:</span><span class="mi">10000</span><span class="p">,</span>
+                    <span class="s1">&#39;MaintenanceCost&#39;</span><span class="p">:</span><span class="mf">0.03</span><span class="p">}</span>
+    
+    <span class="n">battery_1</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+    <span class="n">battery_2</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+    <span class="n">battery_3</span> <span class="o">=</span> <span class="n">Battery</span><span class="p">(</span><span class="n">paramIn_batt</span><span class="p">)</span>
+
+    <span class="n">batt_stock</span> <span class="o">=</span> <span class="n">BatteryStock</span><span class="p">([</span>
+                                <span class="n">battery_1</span><span class="p">,</span>
+                                <span class="n">battery_2</span><span class="p">,</span>
+                                <span class="n">battery_3</span>
+                              <span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;state :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">prices :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">prices</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">schedule :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">schedule</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">grid connected&quot;</span><span class="p">)</span>
+    <span class="n">D1_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">sale_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">D2_test</span> <span class="o">=</span> <span class="n">batt_stock</span><span class="o">.</span><span class="n">charge_cost</span><span class="p">(</span><span class="n">GridTest</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">D3_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">purchase_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">D4_test</span> <span class="o">=</span> <span class="n">batt_stock</span><span class="o">.</span><span class="n">discharge_cost</span><span class="p">(</span><span class="n">GridTest</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span> <span class="c1"># demand ok</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;selling price         D1 =&#39;</span><span class="p">,</span> <span class="n">D1_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | buying price             D3 =&#39;</span><span class="p">,</span> <span class="n">D3_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;battery charging cost D2 =&#39;</span><span class="p">,</span> <span class="n">D2_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | battery discharging cost D4 =&#39;</span><span class="p">,</span> <span class="n">D4_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">grid disconnected&quot;</span><span class="p">)</span>
+    <span class="n">D1_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">sale_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">D2_test</span> <span class="o">=</span> <span class="n">batt_stock</span><span class="o">.</span><span class="n">charge_cost</span><span class="p">(</span><span class="n">GridTest</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">D3_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">purchase_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">D4_test</span> <span class="o">=</span> <span class="n">batt_stock</span><span class="o">.</span><span class="n">discharge_cost</span><span class="p">(</span><span class="n">GridTest</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span> <span class="c1"># demand too high</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;selling price         D1 =&#39;</span><span class="p">,</span> <span class="n">D1_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | buying price             D3 =&#39;</span><span class="p">,</span> <span class="n">D3_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;battery charging cost D2 =&#39;</span><span class="p">,</span> <span class="n">D2_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | battery discharging cost D4 =&#39;</span><span class="p">,</span> <span class="n">D4_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+<span class="c1"># %%</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

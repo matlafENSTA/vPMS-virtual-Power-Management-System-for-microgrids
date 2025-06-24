@@ -1,0 +1,15 @@
+{
+    "autoDocstring.customTemplatePath": ".vscode/snypet-comment.mustache",
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+}

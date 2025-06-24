@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>virtualPMS.inpReading &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README_doc.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">virtualPMS_WD</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">virtualPMS.inpReading</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for virtualPMS.inpReading</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">:Created: 2025-06-19 10:43:32</span>
+<span class="sd">:Project: virtual PMS for microgrids</span>
+<span class="sd">:Version: 1.0</span>
+<span class="sd">:Author: Mathieu Lafitte</span>
+<span class="sd">:Description: A few functions made for reading the input tables (inpParam.xlsx) and check their format.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1">#---------------------</span>
+<span class="c1">#%%</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<div class="viewcode-block" id="openxlsx">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.openxlsx">[docs]</a>
+<span class="k">def</span> <span class="nf">openxlsx</span><span class="p">(</span><span class="n">ExcelPath</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;reads the input excel file and returns one dataframe per sheet. Also delete unused columns.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        ExcelPath (str): path of the input excel file (usually input//inpParam.xlsx)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[pd.DataFrame]: input parameters (components, timeseries, output settings...) as DataFrames</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sheets_dict</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">ExcelPath</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># ColsToDrop = [&quot;type&quot;, &quot;notes&quot;, &quot;...&quot;]</span>
+    <span class="n">mainSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+    <span class="n">mainSheet</span> <span class="o">=</span> <span class="n">mainSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;notes&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">)</span>
+
+    <span class="n">TimeSeriesSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Green&amp;LoadTimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">TimeSeriesSheet</span> <span class="o">=</span> <span class="n">TimeSeriesSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">GridPricesSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GridPrices&quot;</span><span class="p">)</span>
+    <span class="n">GridPricesSheet</span> <span class="o">=</span> <span class="n">GridPricesSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;Consumption Mode&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Id&quot;</span><span class="p">)</span>
+    <span class="n">GridScheduleSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GridSchedule&quot;</span><span class="p">)</span>
+    <span class="n">GridScheduleSheet</span> <span class="o">=</span> <span class="n">GridScheduleSheetRaw</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Hour | Month&quot;</span><span class="p">)</span>
+
+    <span class="n">BattSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Batteries&quot;</span><span class="p">)</span>
+    <span class="n">BattSheet</span> <span class="o">=</span> <span class="n">BattSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span><span class="s2">&quot;etc&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">)</span>
+
+    <span class="n">DieselSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DieselGenerator&quot;</span><span class="p">)</span>
+    <span class="n">DieselSheet</span> <span class="o">=</span> <span class="n">DieselSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span><span class="s2">&quot;notes&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">)</span>
+
+    <span class="n">outFSheetRaw</span> <span class="o">=</span> <span class="n">sheets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;outputFormat&quot;</span><span class="p">)</span>
+    <span class="n">outFSheet</span> <span class="o">=</span> <span class="n">outFSheetRaw</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mainSheet</span><span class="p">,</span> <span class="n">TimeSeriesSheet</span><span class="p">,</span> <span class="n">GridPricesSheet</span><span class="p">,</span> <span class="n">GridScheduleSheet</span><span class="p">,</span> <span class="n">BattSheet</span><span class="p">,</span> <span class="n">DieselSheet</span><span class="p">,</span> <span class="n">outFSheet</span></div>
+
+
+<div class="viewcode-block" id="VerifmainSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifmainSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifmainSheet</span><span class="p">(</span><span class="n">mainSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;main&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        mainSheet (pd.DataFrame): content of the &quot;main&quot; sheet as a pd.DataFrame. &quot;parameter&quot; column is the index </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: only necessary values of mainSheet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mainSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mainSheet</span><span class="p">)</span>
+    <span class="n">mainSheetNew</span> <span class="o">=</span> <span class="n">mainSheetNew</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">mainSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifTimeSeriesSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifTimeSeriesSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifTimeSeriesSheet</span><span class="p">(</span><span class="n">TimeSeriesSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;Green&amp;LoadTimeSeries&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        TimeSeriesSheet (pd.DataFrame): content of the &quot;Green&amp;LoadTimeSeries&quot; sheet as a pd.DataFrame. no index set (default)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: TimeSeriesSheet, with each column converted to the good format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">TimeSeriesSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">TimeSeriesSheet</span><span class="p">)</span>
+    <span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">])</span>
+    <span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Load&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Load&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+    <span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Green Prod&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">TimeSeriesSheetNew</span><span class="p">[</span><span class="s2">&quot;Green Prod&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TimeSeriesSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifGridPricesSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifGridPricesSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifGridPricesSheet</span><span class="p">(</span><span class="n">GridPricesSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;GridPrices&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        GridPricesSheet (pd.DataFrame): content of the &quot;GridPrices&quot; sheet as a pd.DataFrame. &quot;Id&quot; column is the index </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: GridPricesSheet, error if wrong format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">GridPricesSheet</span><span class="p">[</span><span class="s2">&quot;Buying price (euros/kWh)&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">GridPricesSheet</span><span class="p">[</span><span class="s2">&quot;Buying price (euros/kWh)&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">GridPricesSheet</span><span class="p">[</span><span class="s2">&quot;Buying price (euros/kWh)&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">GridPricesSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">GridPricesSheet</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">GridPricesSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifGridScheduleSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifGridScheduleSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifGridScheduleSheet</span><span class="p">(</span><span class="n">GridScheduleSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;GridSchedule&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        GridScheduleSheet (pd.DataFrame): content of the &quot;GridSchedule&quot; sheet as a pd.DataFrame. &quot;Hour | Month&quot; column is the index </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GridScheduleSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">GridScheduleSheet</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">GridScheduleSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifBattSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifBattSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifBattSheet</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;Batteries&quot;, and ignore wrong batteries in order to run a simulation anyway.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        BattSheet (pd.DataFrame): content of the &quot;Batteries&quot; sheet as a pd.DataFrame. &quot;parameter&quot; column is the index</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: BattSheet with modified index names, and equal or less columns according to wether the data was ok or not&quot;&quot;&quot;</span>
+    <span class="n">BattSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">Batt</span> <span class="ow">in</span> <span class="n">BattSheet</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c1"># print(Batt,type(Batt))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;capacity&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : capacity !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCmin&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : SOCmin !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCinit&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : SOCinit !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCmax&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : SOCmax !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;eta&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : eta !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;MaximumChargePower&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : MaximumChargePower !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;MaximumDischargePower&quot;</span><span class="p">]):</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because of a missing value : MaximumDischargePower !!!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCmin&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCinit&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">BattSheet</span><span class="p">[</span><span class="n">Batt</span><span class="p">][</span><span class="s2">&quot;SOCmax&quot;</span><span class="p">]:</span>
+            <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">Batt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;!!! The battery named </span><span class="si">{</span><span class="n">Batt</span><span class="si">}</span><span class="s2"> was dropped because it didn&#39;t verify the following statement : SOCmin &lt;= SOCinit &lt;= SOCmax&quot;</span><span class="p">)</span>
+    <span class="n">BattSheetNew</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;SOCinit&quot;</span><span class="p">:</span><span class="s2">&quot;SOC&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;MaximumChargePower&quot;</span><span class="p">:</span><span class="s2">&quot;Pmax_ch&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;MaximumDischargePower&quot;</span><span class="p">:</span><span class="s2">&quot;Pmax_disch&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">BattSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifDieselSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifDieselSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifDieselSheet</span><span class="p">(</span><span class="n">DieselSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;DieselGenerator&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        DieselSheet (pd.DataFrame): content of the &quot;&quot; sheet as a pd.DataFrame. &quot;&quot; column is the index</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: DieselSheet &quot;value&quot; columns with modified index names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DieselSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">DieselSheet</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MaximumPower&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;NominalPower&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MinimumPower&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;TankCapacity&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;FuelRate&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MinimumFuelRate&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;FuelPrice&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;lifetime&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;ReplacementCost&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MaintenanceCost&quot;</span><span class="p">]))</span>
+
+    <span class="k">assert</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MinimumPower&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;NominalPower&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MaximumPower&quot;</span><span class="p">])</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;MinimumFuelRate&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">DieselSheetNew</span><span class="p">[</span><span class="s2">&quot;FuelRate&quot;</span><span class="p">])</span>
+    <span class="n">DieselSheetNew</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s2">&quot;MaximumPower&quot;</span><span class="p">:</span><span class="s2">&quot;Pmax&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;NominalPower&quot;</span><span class="p">:</span><span class="s2">&quot;Pnom&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;MinimumPower&quot;</span><span class="p">:</span><span class="s2">&quot;Pmin&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;MinimumFuelRate&quot;</span><span class="p">:</span><span class="s2">&quot;f_r_min&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;MinimumRuntime (optional)&quot;</span><span class="p">:</span><span class="s2">&quot;MinimumRuntime&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;A (optional)&quot;</span><span class="p">:</span><span class="s2">&quot;A&quot;</span><span class="p">,</span><span class="s2">&quot;B (optional)&quot;</span><span class="p">:</span><span class="s2">&quot;B&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DieselSheetNew</span></div>
+
+
+<div class="viewcode-block" id="VerifoutFSheet">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.inpReading.VerifoutFSheet">[docs]</a>
+<span class="k">def</span> <span class="nf">VerifoutFSheet</span><span class="p">(</span><span class="n">outFSheet</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the validity of the excel sheet &quot;outputFormat&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        outFSheet (pd.DataFrame): content of the &quot;&quot; sheet as a pd.DataFrame. &quot;&quot; column is the index </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: only necessary values of outFSheet (nan index lines dropped)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">outFSheetNew</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">outFSheet</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">outFSheet</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="n">outFSheetNew</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># delete note lines</span>
+    <span class="k">return</span> <span class="n">outFSheetNew</span></div>
+
+<span class="c1"># %%</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

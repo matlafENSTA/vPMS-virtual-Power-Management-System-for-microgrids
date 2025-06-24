@@ -1,0 +1,1319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>virtualPMS package &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="mainHardCode" href="mainHardCode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README_doc.html">README</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Working Directory: docs</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="create_input.html">create_input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mainHardCode.html">mainHardCode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">virtualPMS package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.Battery">virtualPMS.Battery</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.Battery.Battery"><code class="docutils literal notranslate"><span class="pre">Battery</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.BatteryStock">virtualPMS.BatteryStock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.BatteryStock.BatteryStock"><code class="docutils literal notranslate"><span class="pre">BatteryStock</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.DieselGenerator">virtualPMS.DieselGenerator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.DieselGenerator.DieselGenerator"><code class="docutils literal notranslate"><span class="pre">DieselGenerator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.DispatchingStrats">virtualPMS.DispatchingStrats</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.DispatchingStrats.CostStrat"><code class="docutils literal notranslate"><span class="pre">CostStrat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.DispatchingStrats.LFE_CCE"><code class="docutils literal notranslate"><span class="pre">LFE_CCE()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.Grid">virtualPMS.Grid</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.Grid.Grid"><code class="docutils literal notranslate"><span class="pre">Grid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.TimeSeriesAnalysis">virtualPMS.TimeSeriesAnalysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.EnergySums"><code class="docutils literal notranslate"><span class="pre">EnergySums()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.VerifTimeSeries"><code class="docutils literal notranslate"><span class="pre">VerifTimeSeries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.adjust_time_serie"><code class="docutils literal notranslate"><span class="pre">adjust_time_serie()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.calculate_typical_behavior"><code class="docutils literal notranslate"><span class="pre">calculate_typical_behavior()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.generalized_func"><code class="docutils literal notranslate"><span class="pre">generalized_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.plot_compact"><code class="docutils literal notranslate"><span class="pre">plot_compact()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.plot_group"><code class="docutils literal notranslate"><span class="pre">plot_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.plot_separately"><code class="docutils literal notranslate"><span class="pre">plot_separately()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.TimeSeriesAnalysis.relative_error"><code class="docutils literal notranslate"><span class="pre">relative_error()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS.inpReading">virtualPMS.inpReading</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifBattSheet"><code class="docutils literal notranslate"><span class="pre">VerifBattSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifDieselSheet"><code class="docutils literal notranslate"><span class="pre">VerifDieselSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifGridPricesSheet"><code class="docutils literal notranslate"><span class="pre">VerifGridPricesSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifGridScheduleSheet"><code class="docutils literal notranslate"><span class="pre">VerifGridScheduleSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifTimeSeriesSheet"><code class="docutils literal notranslate"><span class="pre">VerifTimeSeriesSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifmainSheet"><code class="docutils literal notranslate"><span class="pre">VerifmainSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.VerifoutFSheet"><code class="docutils literal notranslate"><span class="pre">VerifoutFSheet()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.inpReading.openxlsx"><code class="docutils literal notranslate"><span class="pre">openxlsx()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#virtualpms-pkl-plot">virtualPMS.pkl_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-virtualPMS">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.Battery"><code class="docutils literal notranslate"><span class="pre">Battery</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.BatteryStock"><code class="docutils literal notranslate"><span class="pre">BatteryStock</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.DieselGenerator"><code class="docutils literal notranslate"><span class="pre">DieselGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#virtualPMS.Grid"><code class="docutils literal notranslate"><span class="pre">Grid</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Working Directory: docs</a></li>
+      <li class="breadcrumb-item active">virtualPMS package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/virtualPMS.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="virtualpms-package">
+<h1>virtualPMS package<a class="headerlink" href="#virtualpms-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-virtualPMS.Battery">
+<span id="virtualpms-battery"></span><h2>virtualPMS.Battery<a class="headerlink" href="#module-virtualPMS.Battery" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:39:23</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single battery definition. Includes charge and discharge routines, and test section.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.Battery.Battery">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.Battery.</span></span><span class="sig-name descname"><span class="pre">Battery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramIn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery.Battery" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Battery.Battery.battery_charge">
+<span class="sig-name descname"><span class="pre">battery_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery.battery_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery.Battery.battery_charge" title="Link to this definition"></a></dt>
+<dd><p>simulates the charge of a battery. SOC is updated within.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): excess power from the microgrid (&gt;0, in kW)
+dt (float): charging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: the power actually used to charge the battery, in kW</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Battery.Battery.battery_discharge">
+<span class="sig-name descname"><span class="pre">battery_discharge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery.battery_discharge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery.Battery.battery_discharge" title="Link to this definition"></a></dt>
+<dd><p>simulates the discharge of a battery. SOC is updated within</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): power deficit needed by the microgrid (&gt;0, in kW)
+dt (float): discharging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: power supplied by the battery, in kW</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.BatteryStock">
+<span id="virtualpms-batterystock"></span><h2>virtualPMS.BatteryStock<a class="headerlink" href="#module-virtualPMS.BatteryStock" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:40:01</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Battery Stock Management. A “BatteryStock” object is a list of “Battery” Objects. Includes charge and discharge routines, cost functions and test section.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.BatteryStock.</span></span><span class="sig-name descname"><span class="pre">BatteryStock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_stock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#virtualPMS.Battery.Battery" title="virtualPMS.Battery.Battery"><span class="pre">Battery</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.battery_stock_charge">
+<span class="sig-name descname"><span class="pre">battery_stock_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.battery_stock_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.battery_stock_charge" title="Link to this definition"></a></dt>
+<dd><p>charge the batteries from the lower to the upper SOC.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): the power not being used by the load (in most cases = P_green - P_L &gt; 0) in kW
+dt (float): charging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: &gt;=0 cumulated power input of the battery stock, in kW.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.battery_stock_discharge">
+<span class="sig-name descname"><span class="pre">battery_stock_discharge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.battery_stock_discharge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.battery_stock_discharge" title="Link to this definition"></a></dt>
+<dd><p>discharge the batteries from the upper to the lower SOC.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): the power needed by the load (in most cases = P_L - P_green &gt; 0) in kW
+dt (float): discharging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: &gt;=0 the cumulated power output of the battery stock, in kW.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.charge_cost">
+<span class="sig-name descname"><span class="pre">charge_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charac_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.charge_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.charge_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of charging batteries. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>grid_comp (‘Grid’ object): the grid (if the microgrid is connected to it)
+time_step (int): index of the for loop (used to know if the grid is reliable or not)
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>forecast (bool, optional): if True, future data will be used to dispatch power,</dt><dd><p>if False, only current and past data will be used.</p>
+</dd>
+<dt>charac_period (int, optional): (Defaults to 0, use only when forecast == True) based on the duration of battery charging and forecast abilities, </dt><dd><p>charac_period is the future period of time the function is allowed to look at in order to anticipate dispatching, in hours.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of batteries charging in euro/kWh (0 &lt;= c &lt;= +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.discharge_cost">
+<span class="sig-name descname"><span class="pre">discharge_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.discharge_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.discharge_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of discharging the battery stock knowing the energy needed (power*dt). NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>grid_comp (grid object): the grid (if the microgrid is connected to it).
+power (float): power demand in kW
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of batteries discharging in euro/kWh</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.get_Pbat">
+<span class="sig-name descname"><span class="pre">get_Pbat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_Pbat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.get_Pbat" title="Link to this definition"></a></dt>
+<dd><p>simulates the charge (power&gt;0) or discharge (power&lt;0) of the battery stock and returns the remaining power
+NB : SOCs are NOT uploaded within this function.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>power (float): power demand in kW<span class="classifier">if power &gt; 0, batteries will be charged</span></dt><dd><p>if power &lt; 0, batteries will be discharged</p>
+</dd>
+</dl>
+<p>dt (float&gt;0): duration of the time step in hours</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>float: P_bat if =0, batteries can be fully charged / can supply the load demand</dt><dd><p>if &gt;0, batteries cannot use all the power to charge / cannot supply all the load demand</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.get_Pmax">
+<span class="sig-name descname"><span class="pre">get_Pmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_Pmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.get_Pmax" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>Args:</dt><dd><p>dt (float): discharging time (= 1 time step), in hours
+which (str): if ‘ch’, returns the maximum charge power that can store the battery stock during dt</p>
+<blockquote>
+<div><p>if ‘dis’, returns the maximum discharge power that can supply the battery stock during dt</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: maximum charge or discharge power for the considered time step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.get_SOC">
+<span class="sig-name descname"><span class="pre">get_SOC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'soc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_SOC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.get_SOC" title="Link to this definition"></a></dt>
+<dd><p>for a given stock of many batteries, calculates the overall SOC by processing a weighted average.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>which (str): ‘soc’ for current/real SOC</dt><dd><p>‘min’ for minimum SOC
+‘max’ for maximum SOC</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: SOC of the entire battery stock (weighted average).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.get_var">
+<span class="sig-name descname"><span class="pre">get_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.get_var" title="Link to this definition"></a></dt>
+<dd><p>get the value of any other battery variable non reachable using get_SOC or get_Pmax.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>which (str): ‘capacity’ for overall capacity</dt><dd><p>‘eta’ for overall energy efficiency
+‘ReplacementCost’ for total replacement cost
+‘MaintenanceCost’ for total maintenance cost.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: equivalent variable for the battery stock</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.BatteryStock.sort_batteries">
+<span class="sig-name descname"><span class="pre">sort_batteries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.sort_batteries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.BatteryStock.sort_batteries" title="Link to this definition"></a></dt>
+<dd><p>sorts a list of batteries in order to charge or discharge them following the given criteria.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>criteria (str): choose among a list of pre-made criterias to sort batteries</p>
+</dd>
+<dt>Returns:</dt><dd><p>list of battery objects: the batteries sorted with the criteria or battery_stock if the criteria was not understood</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.DieselGenerator">
+<span id="virtualpms-dieselgenerator"></span><h2>virtualPMS.DieselGenerator<a class="headerlink" href="#module-virtualPMS.DieselGenerator" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:40:42</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Diesel Generator model : parameters definition, runnning routine (including fuel consumption law), cost function</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.DieselGenerator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.DieselGenerator.</span></span><span class="sig-name descname"><span class="pre">DieselGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramIn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.DieselGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.DieselGenerator.FuelConsoFile">
+<span class="sig-name descname"><span class="pre">FuelConsoFile</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\DieselGeneratorFuelConsumption.csv'</span></em><a class="headerlink" href="#virtualPMS.DieselGenerator.DieselGenerator.FuelConsoFile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.DieselGenerator.find_DG_coeffs">
+<span class="sig-name descname"><span class="pre">find_DG_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conso_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\DieselGeneratorFuelConsumption.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc_load</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0.25,</span> <span class="pre">0.5,</span> <span class="pre">0.75,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.find_DG_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.DieselGenerator.find_DG_coeffs" title="Link to this definition"></a></dt>
+<dd><p>Linear regression to find coefficients of the Fuel Consumption law F_C = A * power + B (in L/h)</p>
+<dl>
+<dt>Args:</dt><dd><p>conso_data (str, optional): path of the tabular of fuel consumption reference
+perc_load (list, optional): list of the %s of nominal power applied for measures ([0.25,0.5,0.75,1.0] for the tabular from <a class="reference external" href="https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx">https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx</a>?).</p>
+<blockquote>
+<div><p>Defaults to [0.25,0.5,0.75,1.0].</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>Bool: coeffs A and B of the DG are automatically updated, success if Result == True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.DieselGenerator.run_DG">
+<span class="sig-name descname"><span class="pre">run_DG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.run_DG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.DieselGenerator.run_DG" title="Link to this definition"></a></dt>
+<dd><p>run the DG or buy electricity to the grid according to the power needed but DOES NOT update the fuel amount in the reservoir. It has to be done afterwards.</p>
+<dl>
+<dt>Args:</dt><dd><p>power (float): the power that has to be produced
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: the fuel consumption at the given time step in L/h
+float: the remaining power. if negative : lack of power that has to be bought</p>
+<blockquote>
+<div><p>if positive : surplus of power that can be used to charge the battery stock</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.DieselGenerator.use_cost">
+<span class="sig-name descname"><span class="pre">use_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_DG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.use_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.DieselGenerator.use_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of running the Diesel Generator at a given power. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>f_cons (float): fuel consumption of the DG in L/h (=dFuel_amount/dt). This value can be obtained with run_DG.
+power (float): the power that has to be produced.
+P_DG (float): the power that can be generated by the DG for the next time step in kW. This value can be obtained with run_DG.
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of running the DG in euro/kWh.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.DispatchingStrats">
+<span id="virtualpms-dispatchingstrats"></span><h2>virtualPMS.DispatchingStrats<a class="headerlink" href="#module-virtualPMS.DispatchingStrats" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:41:51</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dispatching strategies implemented : Load Following (LFE), Cycle Charging (CCE) and a modular strategy based on cost comparison (CostStrat).</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.DispatchingStrats.CostStrat">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.DispatchingStrats.</span></span><span class="sig-name descname"><span class="pre">CostStrat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfIN</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ActiveDevices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">BattStock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.BatteryStock.BatteryStock" title="virtualPMS.BatteryStock.BatteryStock"><span class="pre">BatteryStock</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">DG_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.DieselGenerator.DieselGenerator" title="virtualPMS.DieselGenerator.DieselGenerator"><span class="pre">DieselGenerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ChargeUsingGridCost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/DispatchingStrats.html#CostStrat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DispatchingStrats.CostStrat" title="Link to this definition"></a></dt>
+<dd><p>Strategy based on costs dispatching routine.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>dfIN (pd.DataFrame): input dataframe. Content<span class="classifier">“Time”: list or np.array of datetime.datetime objects</span></dt><dd><p>“Load”: list or np.array of floats (&gt;=0)
+“Green Prod”: list or np.array of floats (&gt;=0)</p>
+</dd>
+</dl>
+<p>ActiveDevices (dict): {“Grid”: True/False, “Batteries”: True/False, “DieselGenerator”: True/False} : enter True for using the device, False to disable it.
+grid_1 (Grid): the grid used during simulation
+BattStock (BatteryStock): the battery stock used during simulation
+DG_1 (DieselGenerator): the diesel generator used during simulation
+dt (float): duration of the time step, in hours
+ChargeUsingGridCost (float, optional): if the cost of 1kWh purchased from the grid is less than this, it will be used to charge batteries. Defaults to 0.
+forecast (bool, optional): If True, future data will be used to dispatch power.</p>
+<blockquote>
+<div><p>If False, only current and past data will be used. Defaults to False.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>forecast_period (float, optional): will only be used when forecast == True. based on the duration of battery charging and forecast abilities, </dt><dd><p>it represents the future period of time the function is allowed to look at in order to anticipate dispatching, IN HOURS. 
+Defaults to 24.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl>
+<dt>dict, dict: Power and others time series.</dt><dd><dl class="simple">
+<dt>main:</dt><dd><p>TimeArray [datetime]: dfIN[“Time”]
+P_L [kWh]: dfIN[“Load”]
+P_L_modif [kWh]: load power effectively supplied (clipped) (&gt;=0)
+P_green [kWh]: dfIN[“Green Prod”] (&gt;=0)
+P_grid [kWh]: grid power output
+P_bat [kWh]: battery stock power output
+P_diesel [kWh]: diesel generator power output (&gt;=0)
+SOC [%]: State Of Charge of the battery stock (0&lt;=SOC&lt;=1)
+F_C [L]: fuel remaining in the tank (&gt;=0)</p>
+</dd>
+<dt>others:</dt><dd><p>P_net [kWh]: P_green - P_L
+P_net_modif [kWh]: P_green - P_L_modif
+P_diff [kWh]: Excess (&gt;0) and Deficit (&lt;0) power. = P_green + P_grid + P_bat + P_diesel - P_L
+P_resistor [kWh]: Excess of power that couldn’t be used, neither sold : it goes to a resistor (&gt;0)</p>
+</dd>
+<dt>debug:</dt><dd><p>indic [int]: indicates which branch of if-else was chosen at every time step
+RuntimeDG [int]: indicates how many time steps the diesel generator was running</p>
+</dd>
+</dl>
+<p>allSOCs [dict]: time series of the SOC of every battery of the tank</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.DispatchingStrats.LFE_CCE">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.DispatchingStrats.</span></span><span class="sig-name descname"><span class="pre">LFE_CCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dfIN</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ActiveDevices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">BattStock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.BatteryStock.BatteryStock" title="virtualPMS.BatteryStock.BatteryStock"><span class="pre">BatteryStock</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">DG_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.DieselGenerator.DieselGenerator" title="virtualPMS.DieselGenerator.DieselGenerator"><span class="pre">DieselGenerator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SOClim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/DispatchingStrats.html#LFE_CCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DispatchingStrats.LFE_CCE" title="Link to this definition"></a></dt>
+<dd><p>Load Following and Cycle Charging dispatching routine.</p>
+<dl>
+<dt>Args:</dt><dd><p>strat (str): “lfe” for Load Following strategy, “cce” for Cycle Charging strategy
+dfIN (pd.DataFrame): input dataframe. Content : “Time”: list or np.array of datetime.datetime objects</p>
+<blockquote>
+<div><p>“Load”: list or np.array of floats (&gt;=0)
+“Green Prod”: list or np.array of floats (&gt;=0)</p>
+</div></blockquote>
+<p>ActiveDevices (dict): {“Grid”: True/False, “Batteries”: True/False, “DieselGenerator”: True/False} : enter True for using the device, False to disable it.
+grid_1 (Grid): the grid used during simulation
+BattStock (BatteryStock): the battery stock used during simulation
+DG_1 (DieselGenerator): the diesel generator used during simulation
+dt (float): duration of the time step, in hours
+SOClim (float, optional): under this SOC, batteries will be charged by the grid (when the grid is reliable).</p>
+<blockquote>
+<div><p>NB : if you don’t want to charge the batteries with the grid power at all, enter SOClim = 0. Defaults to 0.7.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>forecast (bool, optional): If True, future data will be used to dispatch power.</dt><dd><p>If False, only current and past data will be used. Defaults to False.</p>
+</dd>
+<dt>forecast_period (float, optional): will only be used when forecast == True. based on the duration of battery charging and forecast abilities, </dt><dd><p>it represents the future period of time the function is allowed to look at in order to anticipate dispatching, IN HOURS. 
+Defaults to 24.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl>
+<dt>dict, dict: Power and others time series.</dt><dd><dl class="simple">
+<dt>main:</dt><dd><p>TimeArray [datetime]: dfIN[“Time”]
+P_L [kWh]: dfIN[“Load”]
+P_L_modif [kWh]: load power effectively supplied (clipped) (&gt;=0)
+P_green [kWh]: dfIN[“Green Prod”] (&gt;=0)
+P_grid [kWh]: grid power output
+P_bat [kWh]: battery stock power output
+P_diesel [kWh]: diesel generator power output (&gt;=0)
+SOC [%]: State Of Charge of the battery stock (0&lt;=SOC&lt;=1)
+F_C [L]: fuel remaining in the tank (&gt;=0)</p>
+</dd>
+<dt>others:</dt><dd><p>P_net [kWh]: P_green - P_L
+P_net_modif [kWh]: P_green - P_L_modif
+P_diff [kWh]: Excess (&gt;0) and Deficit (&lt;0) power. = P_green + P_grid + P_bat + P_diesel - P_L
+P_resistor [kWh]: Excess of power that couldn’t be used, neither sold : it goes to a resistor (&gt;0)</p>
+</dd>
+<dt>debug:</dt><dd><p>indic [int]: indicates which branch of if-else was chosen at every time step
+RuntimeDG [int]: indicates how many time steps the diesel generator was running</p>
+</dd>
+</dl>
+<p>allSOCs [dict]: time series of the SOC of every battery of the tank</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.Grid">
+<span id="virtualpms-grid"></span><h2>virtualPMS.Grid<a class="headerlink" href="#module-virtualPMS.Grid" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:42:37</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Grid definition (costs and schedule) + buy and sell functions + test section.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.Grid.Grid">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.Grid.</span></span><span class="sig-name descname"><span class="pre">Grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid.Grid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.Grid.Grid.GridPricesRef">
+<span class="sig-name descname"><span class="pre">GridPricesRef</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\GridPrices.csv'</span></em><a class="headerlink" href="#virtualPMS.Grid.Grid.GridPricesRef" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.Grid.Grid.GridScheduleRef">
+<span class="sig-name descname"><span class="pre">GridScheduleRef</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\GridSchedule.csv'</span></em><a class="headerlink" href="#virtualPMS.Grid.Grid.GridScheduleRef" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Grid.Grid.purchase_cost">
+<span class="sig-name descname"><span class="pre">purchase_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid.purchase_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid.Grid.purchase_cost" title="Link to this definition"></a></dt>
+<dd><p>finds the cost of purchasing electricity from the grid at the given time. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>time_array (list or np.array): list or np.array representing the measurement time for all results.
+time_step (int): index of the for loop</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of energy purchasing in euro/kWh (0 &lt;= c &lt;= +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Grid.Grid.sale_cost">
+<span class="sig-name descname"><span class="pre">sale_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid.sale_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid.Grid.sale_cost" title="Link to this definition"></a></dt>
+<dd><p>finds the benefit of energy selling in euro/kWh. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>time_array (np.array): measurement time for all results.
+time_step (int): index of the for loop</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: benefit of energy selling in euro/kWh (0 &lt;= c &lt; +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.TimeSeriesAnalysis">
+<span id="virtualpms-timeseriesanalysis"></span><h2>virtualPMS.TimeSeriesAnalysis<a class="headerlink" href="#module-virtualPMS.TimeSeriesAnalysis" title="Link to this heading"></a></h2>
+<dl class="field-list">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:50:48</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This library was made for manipulating time series.</p>
+<p>it includes the following operations :</p>
+<ul class="simple">
+<li><p>plot a dictionnary of array-like elements on the same graph or on different graphs on the same fig (.png) : plot_on_same_graph() and png_graphs()</p></li>
+<li><p>save dictionaries or array-like elements within a tabular (.csv) : save_dict_to_csv()</p></li>
+<li><p>adjust and make constant the sampling period of a time serie : adjust_time_serie()</p></li>
+<li><p>typical behavior of a period : you have 10 years of data and you want to vizualise it on one averaged-year data ? calculate_typical_behavior()</p></li>
+<li><p>comparison of time series : relative_error()</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.EnergySums">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">EnergySums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfResults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DG_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.DieselGenerator.DieselGenerator" title="virtualPMS.DieselGenerator.DieselGenerator"><span class="pre">DieselGenerator</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#EnergySums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.EnergySums" title="Link to this definition"></a></dt>
+<dd><p>Calculates energy variables over the given period by integration of Power time series.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dfResults (pd.DataFrame): every time series generated by the chosen dispatching strategy (stands for DataFrame_TimeSeries)
+DG_1 (DieselGenerator): the diesel generator used during simulation</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: energy and fuel consumption.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.VerifTimeSeries">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">VerifTimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfResults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ActiveDevices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BattStock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.BatteryStock.BatteryStock" title="virtualPMS.BatteryStock.BatteryStock"><span class="pre">BatteryStock</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">DG_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.DieselGenerator.DieselGenerator" title="virtualPMS.DieselGenerator.DieselGenerator"><span class="pre">DieselGenerator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#VerifTimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.VerifTimeSeries" title="Link to this definition"></a></dt>
+<dd><p>Make sure the results have the good format and that they are technically correct (fuel rate &gt; fuel rate min, P_balance = 0 for energy conservation…) .</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dfResults (pd.DataFrame) : every time series generated by the chosen dispatching strategy (stands for DataFrame_TimeSeries)
+ActiveDevices (dict): {“Grid”: True/False, “Batteries”: True/False, “DieselGenerator”: True/False} : type True for using the device, False to disable it.
+BattStock (BatteryStock) : the battery stock used during simulation
+DG_1 (DieselGenerator) : the diesel generator used during simulation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.adjust_time_serie">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">adjust_time_serie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_sampling_period</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#adjust_time_serie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.adjust_time_serie" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>PURPOSE :</dt><dd><p>sort out a time serie by fixing its sampling period.</p>
+</dd>
+<dt>INPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">results<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrameionnary of arrays of size (1,n). it represents time series of same sampling rate, constant.</p>
+</dd>
+<dt class="field-even">fixed_sampling_period<span class="colon">:</span></dt>
+<dd class="field-even"><p>float. if the sampling period of the result is variable, 
+it will be approached by a fixed sampling period time serie using the linear estimation implemented in generalized_func().</p>
+</dd>
+</dl>
+</dd>
+<dt>OUTPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">formatted_results<span class="colon">:</span></dt>
+<dd class="field-odd"><p>time serie representing the same data than the input ‘results’ but with fixed sampling period</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.calculate_typical_behavior">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">calculate_typical_behavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">formatted_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_lenght</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#calculate_typical_behavior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.calculate_typical_behavior" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>INPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">formatted_results<span class="colon">:</span></dt>
+<dd class="field-odd"><p>time serie with fixed sampling period.</p>
+</dd>
+<dt class="field-even">sample_lenght<span class="colon">:</span></dt>
+<dd class="field-even"><p>int. typically 24 if you want hourly value over a representative day, or 365 if you want daily value over a representative year.
+! be consistent with the sampling_period !</p>
+</dd>
+</dl>
+</dd>
+<dt>OUTPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">period_results<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionnary of arrays of size (1,n). Typical behavior of the time serie over the chosen period, for a given sample lenght.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.generalized_func">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">generalized_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abs_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ord_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#generalized_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.generalized_func" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>PURPOSE :</dt><dd><p>given 2 lists reprenting a function and an abscissa x, evaluate f(x) by joining linearly every point of the function.</p>
+</dd>
+<dt>INPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">abs_array<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array of shape (1,n). sorted list of abscissas we have values for the function</p>
+</dd>
+<dt class="field-even">ord_array<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.array of shape (1,n). list of values taken by the function at the abs_array points</p>
+</dd>
+<dt class="field-odd">x<span class="colon">:</span></dt>
+<dd class="field-odd"><p>point you want the function to be evaluated</p>
+</dd>
+</dl>
+</dd>
+<dt>OUTPUT :</dt><dd><dl class="field-list simple">
+<dt class="field-odd">f(x)<span class="colon">:</span></dt>
+<dd class="field-odd"><p>where f is the piecewise linear function represented by abs_array and ord_array</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.plot_compact">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">plot_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfResults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">png</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#plot_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.plot_compact" title="Link to this definition"></a></dt>
+<dd><p>Especially created for showing important time series generated by handmade PMS LFE_CCE.py and cost_strat.py</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>dfResults (pd.DataFrame): DataFrame with keys like ‘SOC’, ‘P_L’, ‘P_green’, etc.</dt><dd><p>mandatory: contains ‘TimeArray’, the time vector.</p>
+</dd>
+</dl>
+<p>plot_name (str): name of the output file (without extension)
+csv (bool, optional): if True, saves the time series under output//<em>plot_name</em>.csv. Defaults to False.
+png (bool, optional): if True, saves the figure under output//<em>plot_name</em>.png. Defaults to False.
+pkl (bool, optional): if True, saves the figure under output//<em>plot_name</em>.pkl. This file can be read by pkl_plot. Defaults to False.
+plot (bool, optional): if True, shows the figure. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.plot_group">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">plot_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfResults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">png</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#plot_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.plot_group" title="Link to this definition"></a></dt>
+<dd><p>Plot multiple time series on the same graph with a common time axis.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>dfResults (pd.DataFrame): DataFrame of time series</dt><dd><p>mandatory: contains ‘TimeArray’, the time vector.</p>
+</dd>
+</dl>
+<p>plot_name (str): name of the output file (without extension)
+title (str, optional): title of the graph. Defaults to ‘’ for no title.
+csv (bool, optional): if True, saves the time series under <em>plot_name</em>.csv. Defaults to False.
+png (bool, optional): if True, saves the figure under <em>plot_name</em>.png. Defaults to False.
+pkl (bool, optional): if True, saves the figure under <em>plot_name</em>.pkl. This file can be read by pkl_plot. Defaults to False.
+plot (bool, optional): if True, shows the figure. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.plot_separately">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">plot_separately</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dfResults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">png</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#plot_separately"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.plot_separately" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>Quickly plot a bunch of time series on one PNG file with an elongated layout.</dt><dd><p>Saves the figure into a png file showing all graphs with a long horizontal format.</p>
+</dd>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>dfResults (pd.DataFrame): DataFrame containing time series</dt><dd><p>mandatory: contains ‘TimeArray’, the time vector.</p>
+</dd>
+</dl>
+<p>plot_name (str): name of the output file (without extension)
+csv (bool, optional): if True, saves the time series under output//<em>plot_name</em>.csv. Defaults to False.
+png (bool, optional): if True, saves the figure under output//<em>plot_name</em>.png. Defaults to False.
+pkl (bool, optional): if True, saves the figure under output//<em>plot_name</em>.pkl. This file can be read by pkl_plot. Defaults to False.
+plot (bool, optional): if True, shows the figure. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.TimeSeriesAnalysis.relative_error">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.TimeSeriesAnalysis.</span></span><span class="sig-name descname"><span class="pre">relative_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TimeArray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reference_f'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">png_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/TimeSeriesAnalysis.html#relative_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.TimeSeriesAnalysis.relative_error" title="Link to this definition"></a></dt>
+<dd><p>Calculates the relative difference between two functions of time f and g, using the Lp norm (p can be defined precisely)</p>
+<dl>
+<dt>Args:</dt><dd><p>TimeArray (np.ndarray): time list (np.array of datetime objects)
+f_values (np.ndarray): values taken by f at every time step
+g_values (np.ndarray): values taken by g at every time step
+p (int, optional): Lp norm parameter (power): 0 &lt; p &lt;= inf. Defaults to 2.
+method (str, optional): Calculation method of relative difference. Defaults to ‘reference_f’.</p>
+<blockquote>
+<div><p>‘reference_f’: <a href="#id1"><span class="problematic" id="id2">|</span></a>f-g|p / <a href="#id3"><span class="problematic" id="id4">|</span></a>f|p (f est la reference)
+‘reference_g’: <a href="#id5"><span class="problematic" id="id6">|</span></a>f-g|p / <a href="#id7"><span class="problematic" id="id8">|</span></a>g|p (g est la reference)
+‘maximum’: <a href="#id9"><span class="problematic" id="id10">|</span></a>f-g|p / max(<a href="#id11"><span class="problematic" id="id12">|</span></a>f|p, <a href="#id13"><span class="problematic" id="id14">|</span></a>g|p)
+‘average’: <a href="#id15"><span class="problematic" id="id16">|</span></a>f-g|p / ((<a href="#id17"><span class="problematic" id="id18">|</span></a>f|p + <a href="#id19"><span class="problematic" id="id20">|</span></a>g|p)/2)</p>
+</div></blockquote>
+<p>plot (bool, optional): if True, a graph will be shown with both functions and their difference. Defaults to False.
+png_name (str, optional): if not “”, graphs will be generated and saved under this name (NB: does not include the .png mention). Defaults to “”.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[float, dict]: Tuple containing the relative difference obtained with the chosen method plus intermediate results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-virtualPMS.inpReading">
+<span id="virtualpms-inpreading"></span><h2>virtualPMS.inpReading<a class="headerlink" href="#module-virtualPMS.inpReading" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-06-19 10:43:32</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A few functions made for reading the input tables (inpParam.xlsx) and check their format.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifBattSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifBattSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BattSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifBattSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifBattSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “Batteries”, and ignore wrong batteries in order to run a simulation anyway.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>BattSheet (pd.DataFrame): content of the “Batteries” sheet as a pd.DataFrame. “parameter” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: BattSheet with modified index names, and equal or less columns according to wether the data was ok or not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifDieselSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifDieselSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">DieselSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifDieselSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifDieselSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “DieselGenerator”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>DieselSheet (pd.DataFrame): content of the “” sheet as a pd.DataFrame. “” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: DieselSheet “value” columns with modified index names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifGridPricesSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifGridPricesSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">GridPricesSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifGridPricesSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifGridPricesSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “GridPrices”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>GridPricesSheet (pd.DataFrame): content of the “GridPrices” sheet as a pd.DataFrame. “Id” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: GridPricesSheet, error if wrong format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifGridScheduleSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifGridScheduleSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">GridScheduleSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifGridScheduleSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifGridScheduleSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “GridSchedule”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>GridScheduleSheet (pd.DataFrame): content of the “GridSchedule” sheet as a pd.DataFrame. “Hour | Month” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifTimeSeriesSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifTimeSeriesSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">TimeSeriesSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifTimeSeriesSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifTimeSeriesSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “Green&amp;LoadTimeSeries”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>TimeSeriesSheet (pd.DataFrame): content of the “Green&amp;LoadTimeSeries” sheet as a pd.DataFrame. no index set (default)</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: TimeSeriesSheet, with each column converted to the good format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifmainSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifmainSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mainSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifmainSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifmainSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “main”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>mainSheet (pd.DataFrame): content of the “main” sheet as a pd.DataFrame. “parameter” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: only necessary values of mainSheet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.VerifoutFSheet">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">VerifoutFSheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outFSheet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#VerifoutFSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.VerifoutFSheet" title="Link to this definition"></a></dt>
+<dd><p>Verify the validity of the excel sheet “outputFormat”</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>outFSheet (pd.DataFrame): content of the “” sheet as a pd.DataFrame. “” column is the index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pd.DataFrame: only necessary values of outFSheet (nan index lines dropped)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="virtualPMS.inpReading.openxlsx">
+<span class="sig-prename descclassname"><span class="pre">virtualPMS.inpReading.</span></span><span class="sig-name descname"><span class="pre">openxlsx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ExcelPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/inpReading.html#openxlsx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.inpReading.openxlsx" title="Link to this definition"></a></dt>
+<dd><p>reads the input excel file and returns one dataframe per sheet. Also delete unused columns.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>ExcelPath (str): path of the input excel file (usually input//inpParam.xlsx)</p>
+</dd>
+<dt>Returns:</dt><dd><p>tuple[pd.DataFrame]: input parameters (components, timeseries, output settings…) as DataFrames</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="virtualpms-pkl-plot">
+<h2>virtualPMS.pkl_plot<a class="headerlink" href="#virtualpms-pkl-plot" title="Link to this heading"></a></h2>
+</section>
+<section id="module-virtualPMS">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-virtualPMS" title="Link to this heading"></a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Created<span class="colon">:</span></dt>
+<dd class="field-odd"><p>2025-05-26 15:07:20</p>
+</dd>
+<dt class="field-even">Project<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual PMS for microgrids</p>
+</dd>
+<dt class="field-odd">Version<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1.0</p>
+</dd>
+<dt class="field-even">Author<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mathieu Lafitte</p>
+</dd>
+<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dd class="field-odd"><p>__init__ file for virtualPMS package. No need to run this script directly.</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.Battery">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.</span></span><span class="sig-name descname"><span class="pre">Battery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramIn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Battery.battery_charge">
+<span class="sig-name descname"><span class="pre">battery_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery.battery_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery.battery_charge" title="Link to this definition"></a></dt>
+<dd><p>simulates the charge of a battery. SOC is updated within.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): excess power from the microgrid (&gt;0, in kW)
+dt (float): charging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: the power actually used to charge the battery, in kW</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Battery.battery_discharge">
+<span class="sig-name descname"><span class="pre">battery_discharge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Battery.html#Battery.battery_discharge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Battery.battery_discharge" title="Link to this definition"></a></dt>
+<dd><p>simulates the discharge of a battery. SOC is updated within</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): power deficit needed by the microgrid (&gt;0, in kW)
+dt (float): discharging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: power supplied by the battery, in kW</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.</span></span><span class="sig-name descname"><span class="pre">BatteryStock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">battery_stock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#virtualPMS.Battery.Battery" title="virtualPMS.Battery.Battery"><span class="pre">Battery</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.battery_stock_charge">
+<span class="sig-name descname"><span class="pre">battery_stock_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.battery_stock_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.battery_stock_charge" title="Link to this definition"></a></dt>
+<dd><p>charge the batteries from the lower to the upper SOC.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): the power not being used by the load (in most cases = P_green - P_L &gt; 0) in kW
+dt (float): charging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: &gt;=0 cumulated power input of the battery stock, in kW.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.battery_stock_discharge">
+<span class="sig-name descname"><span class="pre">battery_stock_discharge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.battery_stock_discharge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.battery_stock_discharge" title="Link to this definition"></a></dt>
+<dd><p>discharge the batteries from the upper to the lower SOC.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>power (float): the power needed by the load (in most cases = P_L - P_green &gt; 0) in kW
+dt (float): discharging time (= 1 time step), in hours</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: &gt;=0 the cumulated power output of the battery stock, in kW.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.charge_cost">
+<span class="sig-name descname"><span class="pre">charge_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charac_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.charge_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.charge_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of charging batteries. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>grid_comp (‘Grid’ object): the grid (if the microgrid is connected to it)
+time_step (int): index of the for loop (used to know if the grid is reliable or not)
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>forecast (bool, optional): if True, future data will be used to dispatch power,</dt><dd><p>if False, only current and past data will be used.</p>
+</dd>
+<dt>charac_period (int, optional): (Defaults to 0, use only when forecast == True) based on the duration of battery charging and forecast abilities, </dt><dd><p>charac_period is the future period of time the function is allowed to look at in order to anticipate dispatching, in hours.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of batteries charging in euro/kWh (0 &lt;= c &lt;= +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.discharge_cost">
+<span class="sig-name descname"><span class="pre">discharge_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#virtualPMS.Grid.Grid" title="virtualPMS.Grid.Grid"><span class="pre">Grid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.discharge_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.discharge_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of discharging the battery stock knowing the energy needed (power*dt). NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>grid_comp (grid object): the grid (if the microgrid is connected to it).
+power (float): power demand in kW
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of batteries discharging in euro/kWh</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.get_Pbat">
+<span class="sig-name descname"><span class="pre">get_Pbat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_Pbat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.get_Pbat" title="Link to this definition"></a></dt>
+<dd><p>simulates the charge (power&gt;0) or discharge (power&lt;0) of the battery stock and returns the remaining power
+NB : SOCs are NOT uploaded within this function.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>power (float): power demand in kW<span class="classifier">if power &gt; 0, batteries will be charged</span></dt><dd><p>if power &lt; 0, batteries will be discharged</p>
+</dd>
+</dl>
+<p>dt (float&gt;0): duration of the time step in hours</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>float: P_bat if =0, batteries can be fully charged / can supply the load demand</dt><dd><p>if &gt;0, batteries cannot use all the power to charge / cannot supply all the load demand</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.get_Pmax">
+<span class="sig-name descname"><span class="pre">get_Pmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_Pmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.get_Pmax" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>Args:</dt><dd><p>dt (float): discharging time (= 1 time step), in hours
+which (str): if ‘ch’, returns the maximum charge power that can store the battery stock during dt</p>
+<blockquote>
+<div><p>if ‘dis’, returns the maximum discharge power that can supply the battery stock during dt</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: maximum charge or discharge power for the considered time step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.get_SOC">
+<span class="sig-name descname"><span class="pre">get_SOC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'soc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_SOC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.get_SOC" title="Link to this definition"></a></dt>
+<dd><p>for a given stock of many batteries, calculates the overall SOC by processing a weighted average.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>which (str): ‘soc’ for current/real SOC</dt><dd><p>‘min’ for minimum SOC
+‘max’ for maximum SOC</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: SOC of the entire battery stock (weighted average).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.get_var">
+<span class="sig-name descname"><span class="pre">get_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.get_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.get_var" title="Link to this definition"></a></dt>
+<dd><p>get the value of any other battery variable non reachable using get_SOC or get_Pmax.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>which (str): ‘capacity’ for overall capacity</dt><dd><p>‘eta’ for overall energy efficiency
+‘ReplacementCost’ for total replacement cost
+‘MaintenanceCost’ for total maintenance cost.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>float: equivalent variable for the battery stock</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.BatteryStock.sort_batteries">
+<span class="sig-name descname"><span class="pre">sort_batteries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">criteria</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/virtualPMS/BatteryStock.html#BatteryStock.sort_batteries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.BatteryStock.sort_batteries" title="Link to this definition"></a></dt>
+<dd><p>sorts a list of batteries in order to charge or discharge them following the given criteria.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>criteria (str): choose among a list of pre-made criterias to sort batteries</p>
+</dd>
+<dt>Returns:</dt><dd><p>list of battery objects: the batteries sorted with the criteria or battery_stock if the criteria was not understood</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.</span></span><span class="sig-name descname"><span class="pre">DieselGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramIn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.FuelConsoFile">
+<span class="sig-name descname"><span class="pre">FuelConsoFile</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\DieselGeneratorFuelConsumption.csv'</span></em><a class="headerlink" href="#virtualPMS.DieselGenerator.FuelConsoFile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.find_DG_coeffs">
+<span class="sig-name descname"><span class="pre">find_DG_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conso_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\DieselGeneratorFuelConsumption.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc_load</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0.25,</span> <span class="pre">0.5,</span> <span class="pre">0.75,</span> <span class="pre">1.0]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.find_DG_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.find_DG_coeffs" title="Link to this definition"></a></dt>
+<dd><p>Linear regression to find coefficients of the Fuel Consumption law F_C = A * power + B (in L/h)</p>
+<dl>
+<dt>Args:</dt><dd><p>conso_data (str, optional): path of the tabular of fuel consumption reference
+perc_load (list, optional): list of the %s of nominal power applied for measures ([0.25,0.5,0.75,1.0] for the tabular from <a class="reference external" href="https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx">https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx</a>?).</p>
+<blockquote>
+<div><p>Defaults to [0.25,0.5,0.75,1.0].</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>Bool: coeffs A and B of the DG are automatically updated, success if Result == True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.run_DG">
+<span class="sig-name descname"><span class="pre">run_DG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.run_DG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.run_DG" title="Link to this definition"></a></dt>
+<dd><p>run the DG or buy electricity to the grid according to the power needed but DOES NOT update the fuel amount in the reservoir. It has to be done afterwards.</p>
+<dl>
+<dt>Args:</dt><dd><p>power (float): the power that has to be produced
+dt (float): duration of the time step, in hours
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: the fuel consumption at the given time step in L/h
+float: the remaining power. if negative : lack of power that has to be bought</p>
+<blockquote>
+<div><p>if positive : surplus of power that can be used to charge the battery stock</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.DieselGenerator.use_cost">
+<span class="sig-name descname"><span class="pre">use_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_DG</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/DieselGenerator.html#DieselGenerator.use_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.DieselGenerator.use_cost" title="Link to this definition"></a></dt>
+<dd><p>calculates the cost of running the Diesel Generator at a given power. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl>
+<dt>Args:</dt><dd><p>f_cons (float): fuel consumption of the DG in L/h (=dFuel_amount/dt). This value can be obtained with run_DG.
+power (float): the power that has to be produced.
+P_DG (float): the power that can be generated by the DG for the next time step in kW. This value can be obtained with run_DG.
+active (bool): if True, the DG is being used normally</p>
+<blockquote>
+<div><p>if False, the DG is NOT being used.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of running the DG in euro/kWh.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="virtualPMS.Grid">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">virtualPMS.</span></span><span class="sig-name descname"><span class="pre">Grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.Grid.GridPricesRef">
+<span class="sig-name descname"><span class="pre">GridPricesRef</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\GridPrices.csv'</span></em><a class="headerlink" href="#virtualPMS.Grid.GridPricesRef" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="virtualPMS.Grid.GridScheduleRef">
+<span class="sig-name descname"><span class="pre">GridScheduleRef</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\mlafi\\Documents\\00_TRAVAIL\\2025.03_PIMENT\\GIT_finalRepo\\virtualPMS\\DataBase\\GridSchedule.csv'</span></em><a class="headerlink" href="#virtualPMS.Grid.GridScheduleRef" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Grid.purchase_cost">
+<span class="sig-name descname"><span class="pre">purchase_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid.purchase_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid.purchase_cost" title="Link to this definition"></a></dt>
+<dd><p>finds the cost of purchasing electricity from the grid at the given time. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>time_array (list or np.array): list or np.array representing the measurement time for all results.
+time_step (int): index of the for loop</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: cost of energy purchasing in euro/kWh (0 &lt;= c &lt;= +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="virtualPMS.Grid.sale_cost">
+<span class="sig-name descname"><span class="pre">sale_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/virtualPMS/Grid.html#Grid.sale_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#virtualPMS.Grid.sale_cost" title="Link to this definition"></a></dt>
+<dd><p>finds the benefit of energy selling in euro/kWh. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>time_array (np.array): measurement time for all results.
+time_step (int): index of the for loop</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: benefit of energy selling in euro/kWh (0 &lt;= c &lt; +inf)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mainHardCode.html" class="btn btn-neutral float-left" title="mainHardCode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

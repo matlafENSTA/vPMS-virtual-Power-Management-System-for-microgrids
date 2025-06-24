@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="virtualPMS_WD" href="modules.html" />
+    <link rel="prev" title="virtual PMS for Microgrids" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">README</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#content">Content</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#working-directory">Working Directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#virtualpms">virtualPMS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#input">input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output">output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use">How to use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inpparam-xlsx">inpParam.xlsx</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#get-started">Get Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clone-the-repository">Clone the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-only-the-module-at-python-s-root">Install only the module at python’s root</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">virtualPMS_WD</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">README</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README_doc.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="readme">
+<h1>README<a class="headerlink" href="#readme" title="Link to this heading"></a></h1>
+<p>This set of python scripts aims to simulate the behavior of different dispatching strategies of Power Management System (PMS).
+A PMS is a device that tells where energy comes from and where it goes at any time in a microgrid.
+The implemented PMSs include the modelling of the following devices:</p>
+<ul class="simple">
+<li><p><strong>Grid connexion</strong> (with prices)</p></li>
+<li><p><strong>Energy Production &amp; Consumption</strong> (time series)</p></li>
+<li><p><strong>Batteries</strong> (you can define more than one storage device)</p></li>
+<li><p><strong>Diesel Generator</strong> (DG)</p></li>
+</ul>
+<hr class="docutils" />
+<p>3 dispatching strategies are implemented herein:</p>
+<ul class="simple">
+<li><p><strong>Load Following</strong> (LFE): Use the renewable source to supply the load, otherwise buy to the grid, otherwise discharge batteries, otherwise run the DG.</p></li>
+<li><p><strong>Cycle Charging</strong> (CCE): the difference between Load Following and Cycle Charging is thin. CC only runs the DG at its nominal power, and uses the remaining production to charge batteries, while LF runs the DG in order to match the load demand.</p></li>
+<li><p><strong>Strategy based on costs</strong> (CostStrat): a modular strategy based on cost comparison for decision making (for now, only economical cost is implemented within. The strategy is a deterministic aproach made to lower NPC at every time step)</p></li>
+</ul>
+<section id="content">
+<h2>Content<a class="headerlink" href="#content" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>virtualPMS_WD/
+├── main.py
+├── mainHardCode.py
+├── input/
+|   └── inpParam.xlsx
+├── output/
+├── virtualPMS/
+|   ├── DataBase/
+|   |   ├── DieselGeneratorFuelConsumption.csv
+|   |   ├── GridPrices.csv
+|   |   └── GridSchedule.csv
+|   ├── __init__.py
+|   ├── Battery.py
+|   ├── BatteryStock.py
+|   ├── DieselGenerator.py
+|   ├── DispatchingStrats.py
+|   ├── Grid.py
+|   ├── pkl_plot.py
+|   ├── TimeSeriesAnalysis.py
+|   └── inpReader.py
+├── README.md
+├── setup.py
+└── requirements.txt
+</pre></div>
+</div>
+<section id="working-directory">
+<h3>Working Directory<a class="headerlink" href="#working-directory" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="_downloads/51a57dce673278d31eef1bd2264dc1e0/main.py"><span class="xref download myst"><strong>main.py</strong></span></a>: reads <a class="reference download internal" download="" href="_downloads/a82107e60cc49533fd3f01675c836762/inpParam.xlsx"><span class="xref download myst"><strong>inpParam.xlsx</strong></span></a>, define microgrid components and calls the selected dispatching strategy</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/e0055f0ff4b14a91d7ca9b319d576b4b/create_input.py"><span class="xref download myst"><strong>create_input.py</strong></span></a>: helps creating an input to the good format, using known datasets or generating synthetic timeseries.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/16bd02c7be8e63392447f0b5cf4ffc12/03_clear_output.bat"><span class="xref download myst"><strong>03_clear_output.bat</strong></span></a>: delete all files under <code class="docutils literal notranslate"><span class="pre">output/</span></code> by double-clicking (for windows users)</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/10741c54301aa680a80fa6b2a992452e/setup.py"><span class="xref download myst"><strong>setup.py</strong></span></a>: for downloading with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+</span></code> command</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/0792bc3dc7b01941f86b4f993c20ab5f/requirements.txt"><span class="xref download myst"><strong>requirements.txt</strong></span></a>: dependencies used by the script (for creating the virtual environment)</p></li>
+</ul>
+</section>
+<section id="virtualpms">
+<h3>virtualPMS<a class="headerlink" href="#virtualpms" title="Link to this heading"></a></h3>
+<p>Homemade python package that simulates the behavior of different PMS strategies. The package includes 3 dispatching strategies, the modelling of electrical devices and some functions to facilitate the use of time series.
+Content:</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="_downloads/e4db212375f3c3823cd424aeb601049b/DispatchingStrats.py"><span class="xref download myst"><strong>DispatchingStrats.py</strong></span></a>: Contains LFE_CCE() and CostStrat(), the functions performing the dispatch of power at any time step. Results are only time series.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/e64f479192bd6973ec93b47195cc208c/Battery.py"><span class="xref download myst"><strong>Battery.py</strong></span></a>: definition of a single battery, charge and discharge routines</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/643793e84928ce863e905f069fb2fd23/BatteryStock.py"><span class="xref download myst"><strong>BatteryStock.py</strong></span></a>: definition of a battery stock (= python list of batteries), charge and discharge routines, cost functions</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/01ba5113db3ca043cf39c676fe367a84/DieselGenerator.py"><span class="xref download myst"><strong>DieselGenerator.py</strong></span></a>: definition of the diesel generator, help for fuel consumption law parameters, use routine and cost function</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/7eff015c3c7b43ffd256f436138638dd/Grid.py"><span class="xref download myst"><strong>Grid.py</strong></span></a>: definition (mainly schedule and prices), cost functions</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/5e3f33d4850f6d583685ee1e3cf24c78/TimeSeriesAnalysis.py"><span class="xref download myst"><strong>TimeSeriesAnalysis.py</strong></span></a>: mainly for saving results, but also for comparing time series and calculating simple results (EnergySums() function).</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/c34a60cdbe353e81a2554ae6a2566c61/pkl_plot.py"><span class="xref download myst"><strong>pkl_plot.py</strong></span></a>: this script doesn’t depend on the rest of the package. It is used to open ‘.pkl’ results files.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/6d97e1bd870b32ea4fd45b08adb5a4a8/__init__.py"><span class="xref download myst"><strong>__init__.py</strong></span></a>: this file is only required by python to use the folder as a package.</p></li>
+</ul>
+<p>NB: every script includes a test section, to check some basic results just run the desired script with python.</p>
+</section>
+<section id="input">
+<h3>input<a class="headerlink" href="#input" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="_downloads/a82107e60cc49533fd3f01675c836762/inpParam.xlsx"><span class="xref download myst"><strong>inpParam.xlsx</strong></span></a>: where you define the parameters for every component of the microgrid (Load and Renewable Prod time series, Grid characteristics, Batteries, Diesel Generator), and specify the results you want to generate. Contains time series of load and green power production.
+Here is an example of the <em>“Green&amp;LoadTimeSeries”</em> sheet :</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>1</p></th>
+<th class="head"><p>Time</p></th>
+<th class="head"><p>Load</p></th>
+<th class="head"><p>Green Prod</p></th>
+<th class="head"><p>Grid State</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>%Y-%m-%d %H:%M:%S</p></td>
+<td><p>kW</p></td>
+<td><p>kW</p></td>
+<td><p>binary (optional)</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>2025-01-01 00:00:00</p></td>
+<td><p>150</p></td>
+<td><p>100</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>2025-01-01 00:15:00</p></td>
+<td><p>120</p></td>
+<td><p>110</p></td>
+<td><p>110</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="output">
+<h3>output<a class="headerlink" href="#output" title="Link to this heading"></a></h3>
+<p>Under <code class="docutils literal notranslate"><span class="pre">output/</span></code>, you’ll find all the results you chose to generate. They will be named as follows :
+{inputIdd}<em>{StratIdd}</em>{DevicesIdd}_F{forecast}_DataSet.{type}
+where :</p>
+<ul class="simple">
+<li><p>inputIdd = identifier of the input time series</p></li>
+<li><p>StratIdd = ‘LF’ for <em>Load Following</em>, ‘CC’ for <em>Cycle Charging</em> or ‘CS’ for <em>CostStrat</em></p></li>
+<li><p>DevicesIdd = ‘GBD’ if Grid, Batteries and Diesel Generator are connected, ‘—’ if nothing is connected. (also ‘G-D’, ‘GB-’, …)</p></li>
+<li><p>forecast = ‘True’ or ‘False’ wether the forecast on grid cut-offs is activated or not</p></li>
+<li><p>DataSet = ‘MAIN’, ‘AllVar’, ‘Costs’, ‘AllSOCs’</p></li>
+<li><p>type = ‘csv’, ‘png’ or ‘pkl’</p></li>
+</ul>
+<p>NB : the algorithm has a linear computational complexity (O(N)), so it runs fast (for one year of data, hourly, count less than 20seconds to generate every possible result).</p>
+</section>
+</section>
+<section id="how-to-use">
+<h2>How to use<a class="headerlink" href="#how-to-use" title="Link to this heading"></a></h2>
+<p>Quick start of the virtual PMS</p>
+<ul class="simple">
+<li><p>Fill <a class="reference download internal" download="" href="_downloads/a82107e60cc49533fd3f01675c836762/inpParam.xlsx"><span class="xref download myst"><strong>inpParam.xlsx</strong></span></a> (see description below)</p></li>
+<li><p>Open a terminal in <code class="docutils literal notranslate"><span class="pre">virtualPMS_WD/</span></code>, and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> </code> : the dispatching will be simulated. You can run another input this way : <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">your_input.xlsx</span></code> if the input has the same format than <a class="reference download internal" download="" href="_downloads/a82107e60cc49533fd3f01675c836762/inpParam.xlsx"><span class="xref download myst"><strong>inpParam.xlsx</strong></span></a>.</p></li>
+<li><p>Find your results under <code class="docutils literal notranslate"><span class="pre">output/</span></code>.</p></li>
+</ul>
+<section id="inpparam-xlsx">
+<h3>inpParam.xlsx<a class="headerlink" href="#inpparam-xlsx" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Sheet</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>main</p></td>
+<td><p>activated devices, strategy, forecast on grid reliability…</p></td>
+</tr>
+<tr class="row-odd"><td><p>Green&amp;LoadTimeSeries</p></td>
+<td><p>Green Power Production and Load (kW) + Grid State (0 if the grid is connected, 1 if not)</p></td>
+</tr>
+<tr class="row-even"><td><p>GridPrices</p></td>
+<td><p>Buying and Selling prices for Off-Peak Medium and Peak consumption hours.</p></td>
+</tr>
+<tr class="row-odd"><td><p>GridSchedule</p></td>
+<td><p>Consumption schedule described by the grid manager over the year</p></td>
+</tr>
+<tr class="row-even"><td><p>Batteries</p></td>
+<td><p>Capacities, States of Charge, Charge and Discharge Power, and economical parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p>DieselGenerator</p></td>
+<td><p>Operating Range, Tank capacity, Fuel Consumption Law, and economical parameters</p></td>
+</tr>
+<tr class="row-even"><td><p>outputFormat</p></td>
+<td><p>Choose the results you want to generate during the simulation: TRUE for activation, FALSE for deactivation.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="get-started">
+<h2>Get Started<a class="headerlink" href="#get-started" title="Link to this heading"></a></h2>
+<p>This routine was designed under <a class="reference external" href="https://www.python.org/downloads/release/python-3123/">python 3.12.3</a>. Please ensure using a compatible version to run the code.
+To get started, you’ll need 1.5Go or 500Mo according to wether you use a virtual environment or not.</p>
+<section id="clone-the-repository">
+<h3>Clone the Repository<a class="headerlink" href="#clone-the-repository" title="Link to this heading"></a></h3>
+<p>in the desired folder on your computer, use the command that will copy all the files of this repository under <code class="docutils literal notranslate"><span class="pre">virtualPMS_WD/</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="o">*</span><span class="n">repo_link</span><span class="o">*</span>
+</pre></div>
+</div>
+</section>
+<section id="install-dependencies">
+<h3>Install dependencies<a class="headerlink" href="#install-dependencies" title="Link to this heading"></a></h3>
+<p>We strongly recommand to use a virtual environment to avoid conflicts with other python projects. Follow the next steps to do so :</p>
+<p>1 - Create the virtual environment (in the working directory)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
+</pre></div>
+</div>
+<p>2 - Activate it (Windows PowerShell)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">Activate</span><span class="o">.</span><span class="n">ps1</span>
+</pre></div>
+</div>
+<p>or (Windows cmd) :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span><span class="o">.</span><span class="n">bat</span>
+</pre></div>
+</div>
+<p>3 - Download dependencies (this might take a few time)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>If you are not familiar with virtual environments, you can still import manually the following modules (but it might cause version conflicts on other python projects):</p>
+<ul class="simple">
+<li><p><strong>os</strong></p></li>
+<li><p><strong>sys</strong></p></li>
+<li><p><strong>csv</strong></p></li>
+<li><p><strong>copy</strong></p></li>
+<li><p><strong>numpy</strong></p></li>
+<li><p><strong>pandas</strong></p></li>
+<li><p><strong>pickle</strong></p></li>
+<li><p><strong>datetime</strong></p></li>
+<li><p><strong>matplotlib.pyplot</strong></p></li>
+</ul>
+</section>
+<section id="install-only-the-module-at-python-s-root">
+<h3>Install only the module at python’s root<a class="headerlink" href="#install-only-the-module-at-python-s-root" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+*</span><span class="n">repo_link</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>Then import dependencies directly in your code as follows:
+then import mandatory modules :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">virtualPMS</span><span class="o">-</span><span class="mf">0.1.0</span> <span class="kn">import</span> <span class="nn">DispatchingStrats</span> <span class="k">as</span> <span class="nn">DS</span>
+<span class="kn">from</span> <span class="nn">virtualPMS</span><span class="o">-</span><span class="mf">0.1.0</span> <span class="kn">import</span> <span class="nn">TimeSeriesAnalysis</span> <span class="k">as</span> <span class="nn">TSA</span>
+<span class="kn">from</span> <span class="nn">virtualPMS</span><span class="o">-</span><span class="mf">0.1.0</span> <span class="kn">import</span> <span class="nn">Battery</span><span class="o">,</span> <span class="nn">BatteryStock</span><span class="o">,</span> <span class="nn">DieselGenerator</span><span class="o">,</span> <span class="nn">Grid</span>
+</pre></div>
+</div>
+<p>We really encourage you to use <a class="reference download internal" download="" href="_downloads/51a57dce673278d31eef1bd2264dc1e0/main.py"><span class="xref download myst">main.py</span></a> or <a class="reference download internal" download="" href="_downloads/bffc8b2e552e72ddb62762d0d2f804c4/mainHardCode.py"><span class="xref download myst">mainHardCode.py</span></a> as a starting point to get use to the process.</p>
+<hr class="docutils" />
+<p>You can uninstall the module at any time with the following command :</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">uninstall</span> <span class="n">virtualPMS</span><span class="o">-</span><span class="mf">0.1.0</span>
+</pre></div>
+</div>
+<p><strong>CAUTION :</strong> This method does not include the <code class="docutils literal notranslate"><span class="pre">DataBase/</span></code> folder which is mandatory for modelling the diesel generator.</p>
+<hr class="docutils" />
+<p>PIMENT Research Laboratory <a class="reference external" href="https://github.com/Laboratoire-Piment">[GitHub]</a> <a class="reference external" href="https://piment.univ-reunion.fr">[WebPage]</a><br />
+97410 Saint Pierre, La Réunion<br />
+Mathieu LAFITTE <a class="reference external" href="https://github.com/matlafENSTA/Computing-Projects-ML">[GitHub]</a> <a class="reference internal" href="#www.linkedin.com/in/mathieu-lafitte-188679247"><span class="xref myst">[LinkedIn]</span></a><br />
+2025</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="virtual PMS for Microgrids" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="virtualPMS_WD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

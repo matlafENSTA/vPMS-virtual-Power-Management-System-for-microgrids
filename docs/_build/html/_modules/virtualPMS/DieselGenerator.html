@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>virtualPMS.DieselGenerator &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README_doc.html">vPMS - Virtual Power Management System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">virtualPMS_WD</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">virtualPMS.DieselGenerator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for virtualPMS.DieselGenerator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">:Created: 2025-06-19 10:40:42</span>
+<span class="sd">:Project: virtual PMS for microgrids</span>
+<span class="sd">:Version: 1.0</span>
+<span class="sd">:Author: Mathieu Lafitte</span>
+<span class="sd">:Description: Diesel Generator model : parameters definition, runnning routine (including fuel consumption law), cost function</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1">#---------------------</span>
+<span class="c1">#%%</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<div class="viewcode-block" id="DieselGenerator">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.DieselGenerator.DieselGenerator">[docs]</a>
+<span class="k">class</span> <span class="nc">DieselGenerator</span><span class="p">:</span>
+    <span class="n">FuelConsoFile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s2">&quot;DataBase&quot;</span><span class="p">,</span><span class="s2">&quot;DieselGeneratorFuelConsumption.csv&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramIn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;typical parameters of a DG :</span>
+<span class="sd">            0 &lt;= Pmin &lt; Pnom &lt;= Pmax &lt; 2500kW --&gt; for an inverter, Pmin can be close to 0.3*Pnom but for a classical DG it might not go any further down than 0.8 or 0.9 * Pnom.</span>
+<span class="sd">            50 &lt; TankCapacity &lt; 5000L a powerful DG needs a lot of fuel to run --&gt; 2 &lt; TankCapacity / Pnom &lt; 5</span>
+<span class="sd">            0 &lt;= f_r_min &lt; FuelRate &lt;= 1</span>
+<span class="sd">            0.2 &lt; A &lt; 0.3L/kWh</span>
+<span class="sd">            0.01 &lt; B / Pnom &lt; 0.5L/h</span>
+<span class="sd">            NB1 : the fuel rate is updated the following way : DG_1.FuelRate -= f_cons * dt / DG_1.TankCapacity</span>
+<span class="sd">            NB2 : if Pmin!=0, at low power deficit some &#39;noise&#39; can appear on power and FuelRate curves</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            paramIn (dict): contains the following parameters</span>
+<span class="sd">                Pmax (float): maximum power = the maximum power that can be reached by the generator before losses, in kW</span>
+<span class="sd">                Pnom (float): nominal power = the perfect power for the DG, in kW</span>
+<span class="sd">                Pmin (float): minimum power = the power minimum that can be reached by the DG before losses, in kW</span>
+<span class="sd">                TankCapacity (float): volume of the reservoir in L</span>
+<span class="sd">                FuelRate (float): amount of fuel in the reservoir (0 to 1). This variable will be updated everytime the DG is used</span>
+<span class="sd">                f_r_min (float): minimum of fuel amount before damaging the DG (0 to 1)</span>
+<span class="sd">                lifetime (float): life expectancy of the DG in kWh for a rated use</span>
+<span class="sd">                ReplacementCost (float): replacement cost or price in euro</span>
+<span class="sd">                MaintenanceCost (float): maintenance cost in euro/kWh</span>
+<span class="sd">                FuelPrice (float): fuel price in euro/L</span>
+<span class="sd">                MinimumRuntime (float, optional): minimum runtime before it stops in hours</span>
+<span class="sd">                cur_runtime (float, optional): current runtime (zero if off) in hours</span>
+<span class="sd">                A (int, optional): conversion rate in L/kWh (use find_DG_coeffs to determine it). Defaults to 0.</span>
+<span class="sd">                B (int, optional): no-load consumption in L/h (use find_DG_coeffs to determine it). Defaults to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Pmax</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;Pmax&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;Pnom&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;Pmin&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TankCapacity</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;TankCapacity&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;FuelRate&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;FuelRate&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_r_min</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;f_r_min&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;f_r_min&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;lifetime&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ReplacementCost</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;ReplacementCost&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MaintenanceCost</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;MaintenanceCost&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FuelPrice</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;FuelPrice&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinimumRuntime</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;MinimumRuntime&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;MinimumRuntime&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_runtime</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;cur_runtime&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;cur_runtime&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">paramIn</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;B&#39;</span> <span class="ow">in</span> <span class="n">paramIn</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="c1"># Fuel_consumed = (A * supplied_power + B) * dt, see above for typical values of A and B</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">TankCapacity</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmax</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_r_min</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinimumRuntime</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DieselGenerator.find_DG_coeffs">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.DieselGenerator.DieselGenerator.find_DG_coeffs">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_DG_coeffs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conso_data</span> <span class="o">=</span> <span class="n">FuelConsoFile</span><span class="p">,</span> <span class="n">perc_load</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="mf">1.0</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Linear regression to find coefficients of the Fuel Consumption law F_C = A * power + B (in L/h)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            conso_data (str, optional): path of the tabular of fuel consumption reference</span>
+<span class="sd">            perc_load (list, optional): list of the %s of nominal power applied for measures ([0.25,0.5,0.75,1.0] for the tabular from https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx?).</span>
+<span class="sd">                                        Defaults to [0.25,0.5,0.75,1.0].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Bool: coeffs A and B of the DG are automatically updated, success if Result == True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># data for linear regression to obtain the law fuel_consumption = f(power_needed)</span>
+        <span class="n">dg_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">conso_data</span><span class="p">)</span> <span class="c1"># collected from https://www.generatorsource.com/Diesel_Fuel_Consumption.aspx?</span>
+        <span class="c1"># sample of the file :</span>
+        <span class="c1"># Generator Size (kW)	1/4 Load (gal/hr)	1/2 Load (gal/hr)	3/4 Load (gal/hr)	Full Load (gal/hr)</span>
+        <span class="c1"># 20	                0.6	                0.9	                1.3             	1.6</span>
+
+        <span class="n">P_ref</span> <span class="o">=</span> <span class="n">dg_data</span><span class="p">[</span><span class="s1">&#39;Generator Size (kW)&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>    <span class="c1"># reference nominal power array (kW)</span>
+        <span class="n">conso_gal</span> <span class="o">=</span> <span class="n">dg_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>            <span class="c1"># reference fuel consumption array (gallon/hour)</span>
+        <span class="n">gallon</span> <span class="o">=</span> <span class="mf">3.7854</span>
+        <span class="n">conso_lit</span> <span class="o">=</span> <span class="n">conso_gal</span> <span class="o">*</span> <span class="n">gallon</span>                       <span class="c1"># convert gallon/hour in L/hour</span>
+
+        <span class="c1"># print(&quot;fuel consumption reference (L/h) :\n&quot;, conso_lit)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conso_lit</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">perc_load</span><span class="p">))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">P_ref</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">conso_lit</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">P_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># adding a line for an hypothetical DG with Pnom = 0, for linear regression</span>
+            <span class="n">P_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span><span class="n">P_ref</span><span class="p">))</span>
+            <span class="n">conso_lit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">conso_lit</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])],</span><span class="n">conso_lit</span><span class="p">))</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">P_ref</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">P_ref</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">P_ref</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">&lt;</span> <span class="n">P_ref</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">&lt;</span> <span class="n">P_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">idx</span>
+        <span class="c1"># print(&#39;idx&#39;, idx, &#39;pnom&#39;, self.Pnom, &#39;pref&#39;, P_ref[0])</span>
+
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">P_ref</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>                 <span class="c1"># huge DG</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;engine too big (Pnom = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span><span class="si">}</span><span class="s2"> &gt;&gt; Pmax_model = </span><span class="si">{</span><span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) The linear approx to find consumption coeffs might be badly handled,</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;you must fill A and B by yourself. Typical values are A = 0.24 and B = 0.08 * Pnom.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">P_ref</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]):</span>              <span class="c1"># big DG</span>
+            <span class="n">conso_approx</span> <span class="o">=</span> <span class="n">conso_lit</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,:]</span> <span class="o">+</span> <span class="p">(</span><span class="n">conso_lit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">conso_lit</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">idx</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>                                                                           <span class="c1"># little DG</span>
+            <span class="n">conso_approx</span> <span class="o">=</span> <span class="n">conso_lit</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">+</span> <span class="p">(</span><span class="n">conso_lit</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">conso_lit</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_ref</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span> <span class="p">:</span>                                                                                               <span class="c1"># normal DG</span>
+            <span class="n">conso_approx</span> <span class="o">=</span> <span class="n">conso_lit</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span> <span class="o">+</span> <span class="p">(</span><span class="n">conso_lit</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">conso_lit</span><span class="p">[</span><span class="n">idx</span><span class="p">,:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">P_ref</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">-</span> <span class="n">P_ref</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">perc_load</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span><span class="p">,</span> <span class="n">conso_approx</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="DieselGenerator.run_DG">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.DieselGenerator.DieselGenerator.run_DG">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_DG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;run the DG or buy electricity to the grid according to the power needed but DOES NOT update the fuel amount in the reservoir. It has to be done afterwards.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            power (float): the power that has to be produced</span>
+<span class="sd">            dt (float): duration of the time step, in hours</span>
+<span class="sd">            active (bool): if True, the DG is being used normally</span>
+<span class="sd">                            if False, the DG is NOT being used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: the fuel consumption at the given time step in L/h</span>
+<span class="sd">            float: the remaining power. if negative : lack of power that has to be bought</span>
+<span class="sd">                                        if positive : surplus of power that can be used to charge the battery stock</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_r_min</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+        
+        <span class="n">fuel_available</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_r_min</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">TankCapacity</span>
+        <span class="n">P_allowed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="p">(</span><span class="n">fuel_available</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmax</span><span class="p">))</span>
+        <span class="c1"># print(&#39;P_allowed&#39;,round(P_allowed,3),&#39;FuelRate&#39;, round(self.FuelRate,3), &#39;power&#39;, power, &#39;comp&#39;, fuel_available / dt - self.B)</span>
+        
+        <span class="k">if</span> <span class="n">P_allowed</span> <span class="o">==</span> <span class="n">power</span> <span class="ow">or</span> <span class="n">P_allowed</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span><span class="p">:</span>                                       <span class="c1"># power demand is low</span>
+            <span class="k">if</span> <span class="n">fuel_available</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">:</span>                  <span class="c1"># ... but still not enough fuel</span>
+                <span class="n">P_diesel_i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">f_consumption</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># print(&#39;diesel_use_case&#39;, 1, &#39;p_a&#39;, (fuel_available / dt - self.B) / self.A, &#39;power&#39;, power)</span>
+            <span class="k">else</span><span class="p">:</span>                                                                              <span class="c1"># ... and there is enough fuel remaining</span>
+                <span class="n">P_diesel_i</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span><span class="p">)</span>
+                <span class="n">f_consumption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">P_diesel_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+                <span class="c1"># print(&#39;diesel_use_case&#39;, 2, &#39;p_a&#39;, (fuel_available / dt - self.B) / self.A, &#39;power&#39;, power)</span>
+        <span class="k">elif</span> <span class="n">P_allowed</span> <span class="o">==</span> <span class="p">(</span><span class="n">fuel_available</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">:</span>                             <span class="c1"># fuel rate is low, DG won&#39;t start</span>
+            <span class="n">P_diesel_i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">f_consumption</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># print(&#39;diesel_use_case&#39;, 3, &#39;p_a&#39;, (fuel_available / dt - self.B) / self.A, &#39;power&#39;, power)</span>
+        <span class="k">else</span><span class="p">:</span>                                                                                  <span class="c1"># Pmax DG is restricting (P_allowed = self.Pmax)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">&lt;=</span> <span class="n">P_allowed</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pmax</span><span class="p">:</span>                                             <span class="c1"># almost nominal functioning</span>
+                <span class="n">P_diesel_i</span> <span class="o">=</span> <span class="n">P_allowed</span>
+                <span class="c1"># print(&#39;diesel_use_case&#39;, 4, &#39;p_a&#39;, (fuel_available / dt - self.B) / self.A, &#39;power&#39;, power)</span>
+            <span class="k">else</span><span class="p">:</span>                                                                              <span class="c1"># nominal functioning</span>
+                <span class="n">P_diesel_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pnom</span>
+                <span class="c1"># print(&#39;diesel_use_case&#39;, 5, &#39;p_a&#39;, (fuel_available / dt - self.B) / self.A, &#39;power&#39;, power)</span>
+            <span class="n">f_consumption</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">*</span> <span class="n">P_diesel_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="k">return</span> <span class="n">f_consumption</span><span class="p">,</span> <span class="n">P_diesel_i</span></div>
+
+
+<div class="viewcode-block" id="DieselGenerator.use_cost">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.DieselGenerator.DieselGenerator.use_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">use_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f_cons</span><span class="p">,</span> <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># running the DG</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;calculates the cost of running the Diesel Generator at a given power. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            f_cons (float): fuel consumption of the DG in L/h (=dFuel_amount/dt). This value can be obtained with run_DG.</span>
+<span class="sd">            power (float): the power that has to be produced.</span>
+<span class="sd">            P_DG (float): the power that can be generated by the DG for the next time step in kW. This value can be obtained with run_DG.</span>
+<span class="sd">            active (bool): if True, the DG is being used normally</span>
+<span class="sd">                            if False, the DG is NOT being used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: cost of running the DG in euro/kWh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        
+        <span class="n">fuel_available</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_r_min</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">TankCapacity</span>
+        <span class="k">if</span> <span class="n">fuel_available</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">f_cons</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">P_DG</span> <span class="o">&lt;</span> <span class="n">power</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">10e10</span>
+        <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_runtime</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MinimumRuntime</span><span class="p">:</span> <span class="c1"># under a specific period MinimumRuntime, it is not interesting to run the DG : this line ensures the DG to run more by lowering its (virtual) running cost</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f_cons</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">FuelPrice</span> <span class="o">/</span> <span class="n">P_DG</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ReplacementCost</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">MaintenanceCost</span></div>
+</div>
+
+
+<span class="c1"># test section</span>
+<span class="c1"># -----------------------------------------------------------------</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> --- testing the diesel generator model ---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">paramIn_DG1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Pmax&quot;</span><span class="p">:</span><span class="mi">400</span><span class="p">,</span>
+                   <span class="s2">&quot;Pnom&quot;</span><span class="p">:</span><span class="mi">380</span><span class="p">,</span>
+                   <span class="s2">&quot;Pmin&quot;</span><span class="p">:</span><span class="mi">370</span><span class="p">,</span>
+                   <span class="s2">&quot;TankCapacity&quot;</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span>
+                   <span class="s2">&quot;FuelRate&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+                   <span class="s2">&quot;f_r_min&quot;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span>
+                   <span class="s2">&quot;lifetime&quot;</span><span class="p">:</span><span class="mi">200000</span><span class="p">,</span>
+                   <span class="s2">&quot;ReplacementCost&quot;</span><span class="p">:</span><span class="mi">10000</span><span class="p">,</span>
+                   <span class="s2">&quot;MaintenanceCost&quot;</span><span class="p">:</span><span class="mf">0.08</span><span class="p">,</span>
+                   <span class="s2">&quot;FuelPrice&quot;</span><span class="p">:</span><span class="mf">1.5</span><span class="p">}</span>
+    
+    <span class="c1">### find_DG_coeffs() testing</span>
+    <span class="n">DG_test_1</span> <span class="o">=</span> <span class="n">DieselGenerator</span><span class="p">(</span><span class="n">paramIn_DG1</span><span class="p">)</span>
+    <span class="n">DG_test_1</span><span class="o">.</span><span class="n">find_DG_coeffs</span><span class="p">()</span>
+    <span class="n">P_DG_testlist</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">125</span><span class="p">,</span><span class="mi">135</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span><span class="mi">175</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">230</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">350</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span><span class="mi">750</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1250</span><span class="p">,</span><span class="mi">1500</span><span class="p">,</span><span class="mi">1750</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2250</span><span class="p">,</span><span class="mi">2500</span><span class="p">]</span>
+    <span class="c1"># P_DG_testlist = [5,25]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P_DG_testlist</span><span class="p">:</span>
+        <span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">=</span> <span class="mf">0.9</span><span class="o">*</span><span class="n">p</span>
+        <span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pmax</span> <span class="o">=</span> <span class="mf">1.1</span><span class="o">*</span><span class="n">p</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">DG_test_1</span><span class="o">.</span><span class="n">find_DG_coeffs</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;A =&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">DG_test_1</span><span class="o">.</span><span class="n">A</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="s1">&#39;B =&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">DG_test_1</span><span class="o">.</span><span class="n">B</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;Pnom =&#39;</span><span class="p">,</span> <span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pnom</span><span class="p">,</span> <span class="s1">&#39;B/Pnom ratio =&#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">DG_test_1</span><span class="o">.</span><span class="n">B</span><span class="o">/</span><span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pnom</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">&lt;=</span> <span class="n">DG_test_1</span><span class="o">.</span><span class="n">B</span> <span class="o">/</span> <span class="n">DG_test_1</span><span class="o">.</span><span class="n">Pnom</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">)</span> <span class="c1"># as long as I know, this should be verified for a wide range of diesel generators but maybe you have a weird DG that doesn&#39;t verify this equation.</span>
+
+    <span class="c1">### Usual functioning</span>
+    <span class="n">DG_test_2</span> <span class="o">=</span> <span class="n">DieselGenerator</span><span class="p">(</span><span class="n">paramIn_DG1</span><span class="p">)</span>
+    <span class="n">DG_test_2</span><span class="o">.</span><span class="n">find_DG_coeffs</span><span class="p">()</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># test duration in hours</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dt =&quot;</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="s2">&quot;hours</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">P_demand &lt; Pmin ==&gt; P_DG = Pmin&quot;</span><span class="p">)</span>
+    <span class="n">P_demand</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">-</span> <span class="mi">10</span>
+    <span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_DG</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">run_DG</span><span class="p">(</span><span class="n">P_demand</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-=</span> <span class="n">fuel_conso</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">TankCapacity</span>
+    <span class="n">D5_test</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">use_cost</span><span class="p">(</span><span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f_cons =&#39;</span><span class="p">,</span> <span class="n">fuel_conso</span><span class="p">,</span> <span class="s1">&#39;f_rem =&#39;</span><span class="p">,</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P_demand =&#39;</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="s1">&#39;P_DG =&#39;</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">,</span> <span class="s1">&#39;price =&#39;</span><span class="p">,</span> <span class="n">D5_test</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Pmin &lt; P_demand &lt; Pmax ==&gt; P_DG = P_demand&quot;</span><span class="p">)</span>
+    <span class="n">P_demand</span> <span class="o">=</span> <span class="p">(</span><span class="n">DG_test_2</span><span class="o">.</span><span class="n">Pmin</span> <span class="o">+</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">Pmax</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_DG</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">run_DG</span><span class="p">(</span><span class="n">P_demand</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-=</span> <span class="n">fuel_conso</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">TankCapacity</span>
+    <span class="n">D5_test</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">use_cost</span><span class="p">(</span><span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f_cons =&#39;</span><span class="p">,</span> <span class="n">fuel_conso</span><span class="p">,</span> <span class="s1">&#39;f_rem =&#39;</span><span class="p">,</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P_demand =&#39;</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="s1">&#39;P_DG =&#39;</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">,</span> <span class="s1">&#39;price =&#39;</span><span class="p">,</span> <span class="n">D5_test</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Pmax &lt; P_demand ==&gt; P_DG = Pmax&quot;</span><span class="p">)</span>
+    <span class="n">P_demand</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">Pmax</span> <span class="o">+</span> <span class="mi">10</span>
+    <span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_DG</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">run_DG</span><span class="p">(</span><span class="n">P_demand</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-=</span> <span class="n">fuel_conso</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">TankCapacity</span>
+    <span class="n">D5_test</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">use_cost</span><span class="p">(</span><span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f_cons =&#39;</span><span class="p">,</span> <span class="n">fuel_conso</span><span class="p">,</span> <span class="s1">&#39;f_rem =&#39;</span><span class="p">,</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">FuelRate</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P_demand =&#39;</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="s1">&#39;P_DG =&#39;</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">,</span> <span class="s1">&#39;price =&#39;</span><span class="p">,</span> <span class="n">D5_test</span><span class="p">)</span>
+
+    <span class="c1">### No fuel remaining</span>
+    <span class="n">paramIn_DG1</span><span class="p">[</span><span class="s1">&#39;FuelRate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">paramIn_DG1</span><span class="p">[</span><span class="s1">&#39;f_r_min&#39;</span><span class="p">]</span>
+    <span class="n">DG_test_3</span> <span class="o">=</span> <span class="n">DieselGenerator</span><span class="p">(</span><span class="n">paramIn_DG1</span><span class="p">)</span>
+    <span class="n">DG_test_3</span><span class="o">.</span><span class="n">find_DG_coeffs</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">no fuel remaining&quot;</span><span class="p">)</span>
+    <span class="n">P_demand</span> <span class="o">=</span> <span class="n">DG_test_3</span><span class="o">.</span><span class="n">Pnom</span>
+    <span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_DG</span> <span class="o">=</span> <span class="n">DG_test_3</span><span class="o">.</span><span class="n">run_DG</span><span class="p">(</span><span class="n">P_demand</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># P_demand kW for 1h</span>
+    <span class="n">D5_test</span> <span class="o">=</span> <span class="n">DG_test_2</span><span class="o">.</span><span class="n">use_cost</span><span class="p">(</span><span class="n">fuel_conso</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;f_cons =&#39;</span><span class="p">,</span> <span class="n">fuel_conso</span><span class="p">,</span> <span class="s1">&#39;f_rem =&#39;</span><span class="p">,</span> <span class="n">DG_test_3</span><span class="o">.</span><span class="n">FuelRate</span> <span class="o">-</span> <span class="n">fuel_conso</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">/</span> <span class="n">DG_test_3</span><span class="o">.</span><span class="n">TankCapacity</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;P_demand =&#39;</span><span class="p">,</span> <span class="n">P_demand</span><span class="p">,</span> <span class="s1">&#39;P_DG =&#39;</span><span class="p">,</span> <span class="n">P_DG</span><span class="p">,</span> <span class="s1">&#39;price =&#39;</span><span class="p">,</span> <span class="n">D5_test</span><span class="p">)</span>
+<span class="c1"># %%</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

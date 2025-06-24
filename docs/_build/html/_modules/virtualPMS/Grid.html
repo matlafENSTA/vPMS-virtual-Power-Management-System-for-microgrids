@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>virtualPMS.Grid &mdash; virtualPMS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            virtualPMS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README_doc.html">vPMS - Virtual Power Management System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">virtualPMS_WD</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">virtualPMS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">virtualPMS.Grid</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for virtualPMS.Grid</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">:Created: 2025-06-19 10:42:37</span>
+<span class="sd">:Project: virtual PMS for microgrids</span>
+<span class="sd">:Version: 1.0</span>
+<span class="sd">:Author: Mathieu Lafitte</span>
+<span class="sd">:Description: Grid definition (costs and schedule) + buy and sell functions + test section.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1">#---------------------</span>
+<span class="c1">#%%</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<div class="viewcode-block" id="Grid">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.Grid.Grid">[docs]</a>
+<span class="k">class</span> <span class="nc">Grid</span><span class="p">:</span>
+    <span class="n">GridPricesRef</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span><span class="s2">&quot;DataBase&quot;</span><span class="p">,</span><span class="s2">&quot;GridPrices.csv&quot;</span><span class="p">)</span>
+    <span class="n">GridScheduleRef</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span><span class="s2">&quot;DataBase&quot;</span><span class="p">,</span><span class="s2">&quot;GridSchedule.csv&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">prices</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">schedule</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;grid definition</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (pd.DataFrame): time serie of the grid state : 0 if cut-off, 1 if normal. has the same lenght as every other time serie. works with type=list too.</span>
+<span class="sd">            prices (pd.DataFrame): price scale table of the grid (4*3 array)</span>
+<span class="sd">            schedule (pd.DataFrame): grid schedule table. rows = hours, columns = months and values in {1,2,3} representing the price peridos of the grid in the year</span>
+<span class="sd">                                     example : schedule[1,2] = 3 means that at midnight (&#39;1&#39;) in february (&#39;2&#39;), it is a peak hour for electricity (&#39;3&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prices</span> <span class="o">=</span> <span class="n">prices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">schedule</span>
+    
+<div class="viewcode-block" id="Grid.sale_cost">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.Grid.Grid.sale_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">sale_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># selling to the grid</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;finds the benefit of energy selling in euro/kWh. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time_array (np.array): measurement time for all results.</span>
+<span class="sd">            time_step (int): index of the for loop</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: benefit of energy selling in euro/kWh (0 &lt;= c &lt; +inf)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># the grid is cut-off</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">price_zone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">time_array</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">time_array</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># off-peak ? medium power ? peak hour ?</span>
+            <span class="c1"># print(&quot;price_zone&quot;, price_zone)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices</span><span class="p">[</span><span class="s2">&quot;Selling price (euros/kWh)&quot;</span><span class="p">][</span><span class="n">price_zone</span><span class="p">]</span> <span class="c1"># matching price</span></div>
+
+    
+<div class="viewcode-block" id="Grid.purchase_cost">
+<a class="viewcode-back" href="../../virtualPMS.html#virtualPMS.Grid.Grid.purchase_cost">[docs]</a>
+    <span class="k">def</span> <span class="nf">purchase_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span> <span class="c1"># purchasing from the grid</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;finds the cost of purchasing electricity from the grid at the given time. NB : it is not an economical cost, it is used for decision making in the costs dispatching strategy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time_array (list or np.array): list or np.array representing the measurement time for all results.</span>
+<span class="sd">            time_step (int): index of the for loop</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: cost of energy purchasing in euro/kWh (0 &lt;= c &lt;= +inf)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># the grid is cut-off</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># print(&#39;date =&#39;, time_array[time_step], &#39;hour =&#39;, time_array[time_step].hour + 1, &#39;month =&#39;, time_array[time_step].month)</span>
+            <span class="n">price_zone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">time_array</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">time_array</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">month</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># off-peak ? medium power ? peak hour ?</span>
+            <span class="c1"># print(&quot;price_zone&quot;, price_zone)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices</span><span class="p">[</span><span class="s2">&quot;Buying price (euros/kWh)&quot;</span><span class="p">][</span><span class="n">price_zone</span><span class="p">]</span> <span class="c1"># matching price</span></div>
+</div>
+
+
+<span class="c1"># test section</span>
+<span class="c1"># -----------------------------------------------------------------</span>
+<span class="k">if</span> <span class="vm">__name__</span><span class="o">==</span><span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; --- testing the grid model ---</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NB : run BatteryStock to compare battery and grid costs</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># sampling period in hours</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">num_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">20</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="c1"># 20 hours</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)])</span>
+
+    <span class="n">GridPrices</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Grid</span><span class="o">.</span><span class="n">GridPricesRef</span><span class="p">)</span>
+    <span class="n">GridSchedule</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Grid</span><span class="o">.</span><span class="n">GridScheduleRef</span><span class="p">)</span>
+    <span class="n">GridState</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_steps</span> <span class="o">-</span> <span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_steps</span><span class="o">//</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>  <span class="c1"># grid reliable or not at t</span>
+    <span class="n">GridTest</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="n">GridState</span><span class="p">,</span> <span class="n">GridPrices</span><span class="p">,</span> <span class="n">GridSchedule</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;state :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">prices :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">prices</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">schedule :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">GridTest</span><span class="o">.</span><span class="n">schedule</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">grid connected&quot;</span><span class="p">)</span>
+    <span class="n">D1_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">sale_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">D3_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">purchase_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;selling price         D1 =&#39;</span><span class="p">,</span> <span class="n">D1_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | buying price             D3 =&#39;</span><span class="p">,</span> <span class="n">D3_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">grid disconnected&quot;</span><span class="p">)</span>
+    <span class="n">D1_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">sale_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="n">D3_test</span> <span class="o">=</span> <span class="n">GridTest</span><span class="o">.</span><span class="n">purchase_cost</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;selling price         D1 =&#39;</span><span class="p">,</span> <span class="n">D1_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh | buying price             D3 =&#39;</span><span class="p">,</span> <span class="n">D3_test</span><span class="p">,</span> <span class="s1">&#39;euros/kWh&#39;</span><span class="p">)</span>
+<span class="c1"># %%</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Mathieu LAFITTE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

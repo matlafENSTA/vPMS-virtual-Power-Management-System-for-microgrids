@@ -1,0 +1,20 @@
+{{description}}Description
+
+{{#argsExist}}
+Args:
+{{#args}}
+    {{var}} ({{typePlaceholder}}): {{desc}}
+{{/args}}
+{{/argsExist}}
+{{#kwargsExist}}
+{{#kwargs}}
+    {{var}} ({{typePlaceholder}}, optional): {{desc}} Defaults to {{default}}.
+{{/kwargs}}
+{{/kwargsExist}}
+
+{{#returnsExist}}
+Returns:
+{{#returns}}
+    {{typePlaceholder}}: {{desc}}
+{{/returns}}
+{{/returnsExist}}
