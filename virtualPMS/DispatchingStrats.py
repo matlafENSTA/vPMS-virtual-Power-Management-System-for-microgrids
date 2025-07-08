@@ -164,14 +164,10 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
                     indic.append(7)
                 else :                                                                                                 # DG power sufficient
                     P_L_modif.append(P_L[i])
-                    if strat.lower() == 'cce':                                                                         # CCE : battery charging
-                        Pbat_ch_i = BattStock.battery_stock_charge(Pdiesel_i + P_net[i], dt)
-                        # print('p_dg',Pdiesel_i,'soc',get_SOC(BattStock))
-                        P_bat.append(- Pbat_ch_i)
-                        indic.append(8)
-                    else : # (strat = 'LFE') load following doesn't use the excess of energy produced by the DG to charge batteries, the DG can follow the load demand
-                        P_bat.append(0)
-                        indic.append(9)
+                    Pbat_ch_i = BattStock.battery_stock_charge(Pdiesel_i + P_net[i], dt)
+                    # print('p_dg',Pdiesel_i,'soc',get_SOC(BattStock))
+                    P_bat.append(- Pbat_ch_i)
+                    indic.append(8)
                     # P_resistor.append(P_green[-1] + P_bat[-1] + P_diesel[-1] - P_L_modif[-1]) # DG output clipping
                 # print(round(F_Cons * dt / DG_1.TankCapacity,3), round(DG_1.FuelRate,3))
     

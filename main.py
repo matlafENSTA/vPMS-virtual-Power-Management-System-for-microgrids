@@ -22,7 +22,7 @@ import pandas as pd
 # Read input//inpParam.xlsx
 # --------------------------------------------------------------------------------------------
 # --- locate entry file ---
-if len(sys.argv)==2:
+if len(sys.argv)==2 and '.xlsx' in sys.argv[1]:
     inputName = sys.argv[1] # this way you can save your inputs easily without changing their name for execution.
 else:
     inputName = 'inpParam.xlsx'
