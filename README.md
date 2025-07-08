@@ -106,7 +106,7 @@ To get started, you'll need 1.5Go or 500Mo according to wether you use a virtual
 ### Clone the Repository
 in the desired folder on your computer, use the command that will copy all the files of this repository under ```virtualPMS_WD/```
 ``` 
-git clone *repo_link*
+git clone https://github.com/matlafENSTA/vPMS-virtual-Power-Management-System-for-microgrids
 ```
 ### Install dependencies
 We strongly recommand to use a virtual environment to avoid conflicts with other python projects. Follow the next steps to do so :
@@ -142,7 +142,7 @@ If you are not familiar with virtual environments, you can still import manually
 
 ### Install only the module at python's root
 ```
-pip install git+*repo_link*
+pip install git+https://github.com/matlafENSTA/vPMS-virtual-Power-Management-System-for-microgrids
 ```
 Then import dependencies directly in your code as follows:
 then import mandatory modules :
