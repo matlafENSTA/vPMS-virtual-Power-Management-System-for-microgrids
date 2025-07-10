@@ -61,9 +61,9 @@ num_steps = min(len(TimeSeriesSheet["Time"]),len(TimeSeriesSheet["Load"]),len(Ti
 # --------------------------------------------------------------------------------------------
 # Electrical Components
 # --------------------------------------------------------------------------------------------
-ActiveDevices = {"Grid": mainSheet["Grid"], 
-                 "Batteries": mainSheet["Batteries"],
-                 "DieselGenerator": mainSheet["DieselGenerator"]}
+ActiveDevices = {"Grid": True if mainSheet["Grid"]=="YES" else False, 
+                 "Batteries": True if mainSheet["Batteries"]=="YES" else False,
+                 "DieselGenerator": True if mainSheet["DieselGenerator"]=="YES" else False}
 
 # --- grid ---
 if ActiveDevices["Grid"]:
@@ -128,8 +128,9 @@ try:
     ForecastPeriod = mainSheet["forecast_charac_period"]
 except: # default to 3 days
     ForecastPeriod = 24 * 3
+ForecastPeriod = ForecastPeriod if pd.notna(ForecastPeriod) else 0
 
-#  ONLY FOR CostStrat.py :
+#  ONLY FOR CostStrat :
 # ----------------------------------------------
 # ChargeUsingGridCost [float] : if the cost of 1kWh purchased from the grid is less than this, it will be used to charge batteries
 try:
@@ -137,7 +138,7 @@ try:
 except: # default to minimum grid price
     ChargeUsingGridCost = GridPricesSheet["Buying price (euros/kWh)"][1]
 
-#  ONLY FOR LFE_CCE.py :
+#  ONLY FOR LFE_CCE :
 # ----------------------------------------------
 # under this SOC, batteries will be charged by the grid (when the grid is reliable).
 # NB : if you don't want to charge the batteries with the grid power at all, just enter SOClim = 0.
@@ -146,11 +147,18 @@ try:
 except: # by default, batteries are not charged by the grid
     SOClim = 0
 
+# the self sufficiency mode prioritizes the batteries to the DG to the grid in case of energy lack
+# the emergency system mode prioritizes the grid to the batteries to the DG in case of energy lack
+priority = mainSheet["priority"]
+assert(priority in  ['Self Sufficiency', 'Emergency System'])
+
 # --------------------------------------------------------------------------------------------
 # %% Simulation, time series generation
 # --------------------------------------------------------------------------------------------
-if strat in ["lfe","cce"]:
-    dfRes, allSOCs = DS.LFE_CCE(strat,TimeSeriesSheet, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
+if strat in ["lfe","cce"] and priority == 'Self Sufficiency':
+    dfRes, allSOCs = DS.LFE_CCE_self_sufficiency(strat,TimeSeriesSheet, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
+elif strat in ["lfe","cce"] and priority == 'Emergency System':
+    dfRes, allSOCs = DS.LFE_CCE_emergency_system(strat,TimeSeriesSheet, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
 elif strat == "coststrat":
     dfRes, allSOCs = DS.CostStrat(TimeSeriesSheet, ActiveDevices, grid_1, BattStock, DG_1, dt, ChargeUsingGridCost, forecast, ForecastPeriod)
 TSA.VerifTimeSeries(dfRes, ActiveDevices, BattStock, DG_1)
@@ -160,25 +168,29 @@ TSA.VerifTimeSeries(dfRes, ActiveDevices, BattStock, DG_1)
 # --------------------------------------------------------------------------------------------
 inputIdd = mainSheet["inputID"]
 DevicesIdd = f"{"G"if ActiveDevices['Grid'] else "-"}{"B"if ActiveDevices['Batteries'] else "-"}{"D"if ActiveDevices['DieselGenerator'] else "-"}"
-StratIdd = "LF" if strat=="lfe" else "CC" if strat=="cce" else "CS"
+StratIdd = "LF" if strat=="lfe" else "CC" if strat=="cce" else "CostStrt"
+PrioIdd = "SelSu" if priority=='Self Sufficiency' else "EmSys"
+if strat in ["lfe","cce"]:
+    StratIdd += '-' + PrioIdd
 
 # --- main results ---
-TSA.plot_compact(dfRes, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_MAIN"),
+TSA.plot_compact(dfRes, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_MAIN"),
                    outFSheet[".csv"]["mainVar"],outFSheet[".png"]["mainVar"],outFSheet[".pkl"]["mainVar"],outFSheet["plot"]["mainVar"])
 
 if outFSheet[".csv"]["energy"]:
-    energy_file_path = os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_TradedEnergy.csv")
+    energy_file_path = os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_TradedEnergy.csv")
     df_energysums = TSA.EnergySums(dfRes, DG_1)
     df_energysums.to_csv(energy_file_path, index=False)
 
 # --- debug & details ---
-TSA.plot_separately(dfRes, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_AllVar"),
+print(inputIdd, StratIdd, DevicesIdd, str(forecast).lower())
+TSA.plot_separately(dfRes, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_AllVar"),
                     outFSheet[".csv"]["allVar"],outFSheet[".png"]["allVar"],outFSheet[".pkl"]["allVar"],outFSheet["plot"]["allVar"])
 
 allSOCs["TimeArray"] = dfRes["TimeArray"]
 if ActiveDevices["Batteries"]:
     allSOCs["all_bat"] = dfRes["SOC"] # add general SOC to SOCs
-TSA.plot_group(allSOCs, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_AllSOCs"), '',
+TSA.plot_group(allSOCs, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_AllSOCs"), '',
                outFSheet[".csv"]["allSOCs"],outFSheet[".png"]["allSOCs"],outFSheet[".pkl"]["allSOCs"],outFSheet["plot"]["allSOCs"])
 
 if strat == "coststrat": # costs results
@@ -197,10 +209,10 @@ if strat == "coststrat": # costs results
 
     d_costs_full = pd.concat([d_costs_needed,d_costs_remain.drop("TimeArray", axis = 1)], axis=1)
 
-    TSA.plot_group(d_costs_needed, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_CostsEnergNeeded"), '',
+    TSA.plot_group(d_costs_needed, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_CostsEnergNeeded"), '',
                 False,outFSheet[".png"]["costs"],outFSheet[".pkl"]["costs"],outFSheet["plot"]["costs"])
-    TSA.plot_group(d_costs_remain, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_CostsEnergRem"), '',
+    TSA.plot_group(d_costs_remain, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_CostsEnergRem"), '',
                 False,outFSheet[".png"]["costs"],outFSheet[".pkl"]["costs"],outFSheet["plot"]["costs"])
-    TSA.plot_group(d_costs_full, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_CostsEnergAll"),
+    TSA.plot_group(d_costs_full, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast).lower()}_CostsEnergAll"),
                 outFSheet['.csv']["costs"])
 # %%
