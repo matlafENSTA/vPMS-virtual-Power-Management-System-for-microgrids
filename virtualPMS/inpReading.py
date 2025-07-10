@@ -181,5 +181,13 @@ def VerifoutFSheet(outFSheet: pd.DataFrame)-> pd.DataFrame:
     for row in outFSheet.index:
         if not pd.notna(row):
             outFSheetNew.drop(row, axis=0, inplace=True) # delete note lines
+    for i in range(outFSheetNew.shape[0]):
+        for j in range(outFSheetNew.shape[1]):
+            if pd.notna(outFSheetNew.iloc[i,j]):
+                assert(outFSheetNew.iloc[i,j] in ["YES","NO"])
+            try:
+                outFSheetNew.iloc[i,j] = True if outFSheetNew.iloc[i,j]=="YES" else False
+            except:
+                print(f"wrong value for line {i} col {j} in outputFormat")
     return outFSheetNew
 # %%
