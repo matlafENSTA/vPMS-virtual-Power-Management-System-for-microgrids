@@ -1,7 +1,6 @@
 # binary files
 *.exe
 *.xlsx
-
 # data folders
 input/*.csv
 output/*
@@ -11,3 +10,6 @@ output_saved/*
 __pycache__/*
 *.pyc
 venv/*
+
+docs/*
+*.html
