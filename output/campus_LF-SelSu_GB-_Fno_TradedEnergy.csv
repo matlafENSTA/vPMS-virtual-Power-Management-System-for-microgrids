@@ -1,0 +1,10 @@
+var,value,unit
+Load Conso,10490.08333,kWh
+Renewable Prod,73460.61699,kWh
+Sales,61617.37936,kWh
+Purchases,0.0,kWh
+Lack,0.0,kWh
+Unused,0.0,kWh
+Battery Supply,5598.60168,kWh
+Diesel,NotFound,kWh
+Fuel Consumed,NotFound,L
