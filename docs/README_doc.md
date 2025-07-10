@@ -50,7 +50,7 @@ virtualPMS_WD/
 ### virtualPMS
 Homemade python package that simulates the behavior of different PMS strategies. The package includes 3 dispatching strategies, the modelling of electrical devices and some functions to facilitate the use of time series.
 Content:
-- [__DispatchingStrats.py__](../virtualPMS//DispatchingStrats.py): Contains LFE_CCE() and CostStrat(), the functions performing the dispatch of power at any time step. Results are only time series.
+- [__DispatchingStrats.py__](../virtualPMS//DispatchingStrats.py): Contains LFE_CCE_emergency_system(), LFE_CCE_self_sufficiency() and CostStrat(), the functions performing the dispatch of power at any time step. Results are only time series.
 - [__Battery.py__](../virtualPMS//Battery.py): definition of a single battery, charge and discharge routines
 - [__BatteryStock.py__](../virtualPMS//BatteryStock.py): definition of a battery stock (= python list of batteries), charge and discharge routines, cost functions
 - [__DieselGenerator.py__](../virtualPMS//DieselGenerator.py): definition of the diesel generator, help for fuel consumption law parameters, use routine and cost function

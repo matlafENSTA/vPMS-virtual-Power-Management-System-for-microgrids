@@ -50,7 +50,7 @@ virtualPMS_WD/
 ### virtualPMS
 Homemade python package that simulates the behavior of different PMS strategies. The package includes 3 dispatching strategies, the modelling of electrical devices and some functions to facilitate the use of time series.
 Content:
-- [__DispatchingStrats.py__](virtualPMS//DispatchingStrats.py): Contains LFE_CCE() and CostStrat(), the functions performing the dispatch of power at any time step. Results are only time series.
+- [__DispatchingStrats.py__](virtualPMS//DispatchingStrats.py): Contains LFE_CCE_emergency_system(), LFE_CCE_self_sufficiency() and CostStrat(), the functions performing the dispatch of power at any time step. Results are only time series.
 - [__Battery.py__](virtualPMS//Battery.py): definition of a single battery, charge and discharge routines
 - [__BatteryStock.py__](virtualPMS//BatteryStock.py): definition of a battery stock (= python list of batteries), charge and discharge routines, cost functions
 - [__DieselGenerator.py__](virtualPMS//DieselGenerator.py): definition of the diesel generator, help for fuel consumption law parameters, use routine and cost function
@@ -75,13 +75,13 @@ Under ```output/```, you'll find all the results you chose to generate. They wil
 {inputIdd}_{StratIdd}_{DevicesIdd}_F{forecast}_DataSet.{type}
 where :
 - inputIdd = identifier of the input time series
-- StratIdd = 'LF' for *Load Following*, 'CC' for *Cycle Charging* or 'CS' for *CostStrat*
+- StratIdd = 'LF-EmSys' for *Load Following - Emergency System*, 'CC-' for *Cycle Charging - Self Sufficiency* or 'CS' for *CostStrat*
 - DevicesIdd = 'GBD' if Grid, Batteries and Diesel Generator are connected, '---' if nothing is connected. (also 'G-D', 'GB-', ...)
 - forecast = 'True' or 'False' wether the forecast on grid cut-offs is activated or not
 - DataSet = 'MAIN', 'AllVar', 'Costs', 'AllSOCs'
 - type = 'csv', 'png' or 'pkl'
 
-NB : the algorithm has a linear computational complexity (O(N)), so it runs fast (for one year of data, hourly, count less than 20seconds to generate every possible result).
+NB : the algorithm has a linear computational complexity (O(N)), so it runs fast (for one year of data, hourly, count less than 20seconds to generate every possible result on an laptop).
 ## How to use
 Quick start of the virtual PMS
 - Fill [__inpParam.xlsx__](input/inpParam.xlsx) (see description below)

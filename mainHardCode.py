@@ -110,7 +110,6 @@ output_command = {"dataset": ["main_var","all_var","SOCs","costs","energy"],
                   ".pkl"   : [True,      False,    False, False,  None],
                   "plot"   : [False,     False,    False, False,  None]}
 df_output_command = pd.DataFrame(output_command)
-inputIdd = input_filename.split('_')[0]
 
 # specific parameters
 # ----------------------------------------------
@@ -126,16 +125,22 @@ ForecastPeriod = 3 * 24
 # ChargeUsingGridCost [float] : if the cost of 1kWh purchased from the grid is less than this, it will be used to charge batteries
 ChargeUsingGridCost = 0.1
 
-#  ONLY FOR LFE_CCE.py :
+#  ONLY FOR LFE_CCE_emergency_system.py :
 # ----------------------------------------------
 SOClim = 0.7 # under this SOC, batteries will be charged by the grid (when the grid is reliable).
 # NB : if you don't want to charge the batteries with the grid power at all, just enter SOClim = 0.
+# the self sufficiency mode prioritizes the batteries to the DG to the grid in case of energy lack
+# the emergency system mode prioritizes the grid to the batteries to the DG in case of energy lack
+priority = 'Emergency System'
+assert(priority in  ['Self Sufficiency', 'Emergency System'])
 
 # --------------------------------------------------------------------------------------------
 # %% Simulation, time series generation
 # --------------------------------------------------------------------------------------------
-if strat in ["lfe","cce"]:
-    dfRes, allSOCs = DS.LFE_CCE(strat,df_inp, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
+if strat in ["lfe","cce"] and priority == 'Self Sufficiency':
+    dfRes, allSOCs = DS.LFE_CCE_self_sufficiency(strat,df_inp, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
+elif strat in ["lfe","cce"] and priority == 'Emergency System':
+    dfRes, allSOCs = DS.LFE_CCE_emergency_system(strat,df_inp, ActiveDevices, grid_1, BattStock, DG_1, dt, SOClim, forecast, ForecastPeriod)
 elif strat == "coststrat":
     dfRes, allSOCs = DS.CostStrat(df_inp, ActiveDevices, grid_1, BattStock, DG_1, dt, ChargeUsingGridCost, forecast, ForecastPeriod)
 TSA.VerifTimeSeries(dfRes, ActiveDevices, BattStock, DG_1)
@@ -143,10 +148,14 @@ TSA.VerifTimeSeries(dfRes, ActiveDevices, BattStock, DG_1)
 # --------------------------------------------------------------------------------------------
 # Save files
 # --------------------------------------------------------------------------------------------
+inputIdd = input_filename.split('_')[0]
 DevicesIdd = f"{"G"if ActiveDevices['Grid'] else "-"}{"B"if ActiveDevices['Batteries'] else "-"}{"D"if ActiveDevices['DieselGenerator'] else "-"}"
 StratIdd = "LF" if strat=="lfe" else "CC" if strat=="cce" else "CS"
+PrioIdd = "SelSu" if priority=='Self Sufficiency' else "EmSys"
+if strat in ["lfe","cce"]:
+    StratIdd += '-' + PrioIdd
 
-# --- main ---
+# --- main results ---
 TSA.plot_compact(dfRes, os.path.join(cWD,"output",f"{inputIdd}_{StratIdd}_{DevicesIdd}_F{str(forecast)}_MAIN"),
                    df_output_command[".csv"][0],df_output_command[".png"][0],df_output_command[".pkl"][0],df_output_command["plot"][0])
 
