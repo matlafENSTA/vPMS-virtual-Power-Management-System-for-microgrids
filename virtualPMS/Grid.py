@@ -42,7 +42,7 @@ class Grid:
         if self.state[time_step] == 0: # the grid is cut-off
             return 0
         else :
-            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month] - 1 # off-peak ? medium power ? peak hour ?
+            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month -1] # off-peak ? medium power ? peak hour ?
             # print("price_zone", price_zone)
             return self.prices["Selling price (euros/kWh)"][price_zone] # matching price
     
@@ -60,7 +60,7 @@ class Grid:
             return np.inf
         else:
             # print('date =', time_array[time_step], 'hour =', time_array[time_step].hour + 1, 'month =', time_array[time_step].month)
-            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month] - 1 # off-peak ? medium power ? peak hour ?
+            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month - 1] # off-peak ? medium power ? peak hour ?
             # print("price_zone", price_zone)
             return self.prices["Buying price (euros/kWh)"][price_zone] # matching price
 
@@ -89,10 +89,10 @@ if __name__=='__main__':
     print("\ngrid connected")
     D1_test = GridTest.sale_cost(time, 5)
     D3_test = GridTest.purchase_cost(time, 5)
-    print('selling price         D1 =', D1_test, 'euros/kWh | buying price             D3 =', D3_test, 'euros/kWh')
+    print('selling price =', D1_test, 'euros/kWh\nbuying price =', D3_test, 'euros/kWh')
 
     print("\ngrid disconnected")
     D1_test = GridTest.sale_cost(time, 15)
     D3_test = GridTest.purchase_cost(time, 15)
-    print('selling price         D1 =', D1_test, 'euros/kWh | buying price             D3 =', D3_test, 'euros/kWh')
+    print('selling price =', D1_test, 'euros/kWh\nbuying price =', D3_test, 'euros/kWh')
 # %%
