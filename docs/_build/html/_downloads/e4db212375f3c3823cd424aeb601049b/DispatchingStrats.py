@@ -16,8 +16,9 @@ from virtualPMS import Battery, BatteryStock, DieselGenerator, Grid
 import pandas as pd
 import numpy as np
 
-def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, BattStock: BatteryStock, DG_1: DieselGenerator, dt: float, SOClim: float = 0.7, forecast: bool=False, forecast_period: float = 24) -> tuple[dict,dict]:
-    """Load Following and Cycle Charging dispatching routine.
+def LFE_CCE_emergency_system(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, BattStock: BatteryStock, DG_1: DieselGenerator, dt: float, SOClim: float = 0.7, forecast: bool=False, forecast_period: float = 24) -> tuple[dict,dict]:
+    """Load Following and Cycle Charging dispatching routine. 
+    Preserve system's components : when energy is missing, priority goes to grid > batteries > DG.
     
     Args:
         strat (str): "lfe" for Load Following strategy, "cce" for Cycle Charging strategy
@@ -75,6 +76,7 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
     SOC = []            # [%]  State-of-charge of the whole stock of batteries (0 to 1).
     P_diesel = []       # [kW] Power supplied by the Diesel Generator (>=0).
     F_C = []            # [L]  Fuel remaining in the tank (L)
+    grid_state_long = np.concatenate((grid_1.state,grid_1.state[:int(forecast_period/dt)]))
     
     # debug & details
     # --------------------------------------------------------------------------------------------
@@ -99,10 +101,10 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
             P_L_modif.append(P_L[i])
             P_diesel.append(0)
             DG_1.cur_runtime = 0
-            if BattStock.get_SOC() < BattStock.get_SOC('max'):                          # battery charging
+            if BattStock.get_SOC() < BattStock.get_SOC('max'):                                                         # battery charging
                 Pbat_ch_i = BattStock.battery_stock_charge(P_net[i],dt)
-                P_grid.append(0)
                 P_bat.append(- Pbat_ch_i)
+                P_grid.append(- P_net[i] + Pbat_ch_i if grid_1.state[i]==1 else 0) # remaining power to the grid if connected
                 # P_resistor.append(P_net[i] - Pbat_ch_i) # renewable prod clipping
                 indic.append(1)
             elif grid_1.state[i]:                                                                                      # selling to the grid
@@ -115,15 +117,14 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
                 P_bat.append(0)
                 # P_resistor.append(P_net[i]) # renewable prod clipping
                 indic.append(3)
-        else :                                                                                                         # green power deficit
+        else :                                                                                                            # green power deficit
             # print('belif   max',get_Pmax(BattStock,dt,'dis'),'pnet',abs(P_net[i]),'P_bat',get_Pbat(BattStock,abs(P_net[i]),dt))
             if grid_1.state[i] and not 0 < DG_1.cur_runtime < DG_1.MinimumRuntime:                                        # purchasing from the grid
                 P_L_modif.append(P_L[i])
                 P_diesel.append(0)
                 DG_1.cur_runtime = 0
                 # P_resistor.append(0)
-                grid_state_long = np.concatenate((grid_1.state,grid_1.state[:int(forecast_period/dt)]))
-                if forecast and (BattStock.get_SOC() < SOClim or 0 in grid_state_long[i:i+int(forecast_period/dt)]): # battery charging using grid
+                if forecast and (BattStock.get_SOC() < SOClim or 0 in grid_state_long[i:i+int(forecast_period/dt)]):   # battery charging using grid
                     Pmax_bat = BattStock.get_Pmax(dt, 'ch')
                     Pbat_ch_i = BattStock.battery_stock_charge(Pmax_bat, dt)
                     P_grid.append(Pbat_ch_i - P_net[i])
@@ -150,28 +151,25 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
                 # P_resistor.append(0)
                 indic.append(6)
             else :                                                                                                     # running DG
-                P_grid.append(0)
                 P_DG_asked = DG_1.Pnom if strat.lower()=='cce' else abs(P_net[i])
                 F_Cons, Pdiesel_i = DG_1.run_DG(P_DG_asked, dt, ActiveDevices["DieselGenerator"])
                 P_diesel.append(Pdiesel_i)
                 DG_1.cur_runtime += dt
                 DG_1.FuelRate -= F_Cons * dt / DG_1.TankCapacity
-                if Pdiesel_i < abs(P_net[i]):                                                                        # DG power unsufficient
+                if Pdiesel_i < abs(P_net[i]):                                                                          # DG power unsufficient
                     Pbat_dis_i = BattStock.battery_stock_discharge(abs(P_net[i]) - Pdiesel_i, dt)
                     P_bat.append(Pbat_dis_i)
-                    P_L_modif.append(P_green[i] + Pdiesel_i + Pbat_dis_i) # load clipping
+                    P_grid.append(abs(P_net[i]) - Pdiesel_i - Pbat_dis_i if grid_1.state[i] == 1 else 0)
+                    P_L_modif.append(P_green[i] + Pdiesel_i + Pbat_dis_i + P_grid[i]) # load clipping
                     # P_resistor.append(0)
                     indic.append(7)
                 else :                                                                                                 # DG power sufficient
                     P_L_modif.append(P_L[i])
-                    if strat.lower() == 'cce':                                                                         # CCE : battery charging
-                        Pbat_ch_i = BattStock.battery_stock_charge(Pdiesel_i + P_net[i], dt)
-                        # print('p_dg',Pdiesel_i,'soc',get_SOC(BattStock))
-                        P_bat.append(- Pbat_ch_i)
-                        indic.append(8)
-                    else : # (strat = 'LFE') load following doesn't use the excess of energy produced by the DG to charge batteries, the DG can follow the load demand
-                        P_bat.append(0)
-                        indic.append(9)
+                    Pbat_ch_i = BattStock.battery_stock_charge(Pdiesel_i + P_net[i], dt)
+                    P_bat.append(- Pbat_ch_i)
+                    P_grid.append(Pdiesel_i - abs(P_net[i]) - Pbat_ch_i if grid_1.state[i] == 1 else 0)
+                    # print('p_dg',Pdiesel_i,'soc',get_SOC(BattStock))
+                    indic.append(8)
                     # P_resistor.append(P_green[-1] + P_bat[-1] + P_diesel[-1] - P_L_modif[-1]) # DG output clipping
                 # print(round(F_Cons * dt / DG_1.TankCapacity,3), round(DG_1.FuelRate,3))
     
@@ -211,8 +209,203 @@ def LFE_CCE(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, B
     dfOut_TS = pd.DataFrame(DictOut_TS)
     return dfOut_TS, allSOCs
 
+def LFE_CCE_self_sufficiency(strat: str, dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, BattStock: BatteryStock, DG_1: DieselGenerator, dt: float, SOClim: float = 0.7, forecast: bool=False, forecast_period: float = 24) -> tuple[dict,dict]:
+    """Load Following and Cycle Charging dispatching routine. 
+    Optimize the self sufficiency : when energy is missing, priority goes to batteries > DG > grid.
+    
+    Args:
+        strat (str): "lfe" for Load Following strategy, "cce" for Cycle Charging strategy
+        dfIN (pd.DataFrame): input dataframe. Content : "Time": list or np.array of datetime.datetime objects
+                                                        "Load": list or np.array of floats (>=0)
+                                                        "Green Prod": list or np.array of floats (>=0)
+        ActiveDevices (dict): {"Grid": True/False, "Batteries": True/False, "DieselGenerator": True/False} : enter True for using the device, False to disable it.
+        grid_1 (Grid): the grid used during simulation
+        BattStock (BatteryStock): the battery stock used during simulation
+        DG_1 (DieselGenerator): the diesel generator used during simulation
+        dt (float): duration of the time step, in hours
+        SOClim (float, optional): under this SOC, batteries will be charged by the grid (when the grid is reliable). 
+                                   NB : if you don't want to charge the batteries with the grid power at all, enter SOClim = 0. Defaults to 0.7.
+        forecast (bool, optional): If True, future data will be used to dispatch power.
+                                   If False, only current and past data will be used. Defaults to False.
+        forecast_period (float, optional): will only be used when forecast == True. based on the duration of battery charging and forecast abilities, 
+                                           it represents the future period of time the function is allowed to look at in order to anticipate dispatching, IN HOURS. 
+                                           Defaults to 24.
+    
+    Returns:
+        dict, dict: Power and others time series.
+            main:
+                TimeArray [datetime]: dfIN["Time"]
+                P_L [kWh]: dfIN["Load"]
+                P_L_modif [kWh]: load power effectively supplied (clipped) (>=0)
+                P_green [kWh]: dfIN["Green Prod"] (>=0)
+                P_grid [kWh]: grid power output
+                P_bat [kWh]: battery stock power output
+                P_diesel [kWh]: diesel generator power output (>=0)
+                SOC [%]: State Of Charge of the battery stock (0<=SOC<=1)
+                F_C [L]: fuel remaining in the tank (>=0)
+            others:
+                P_net [kWh]: P_green - P_L
+                P_net_modif [kWh]: P_green - P_L_modif
+                P_diff [kWh]: Excess (>0) and Deficit (<0) power. = P_green + P_grid + P_bat + P_diesel - P_L
+                P_resistor [kWh]: Excess of power that couldn't be used, neither sold : it goes to a resistor (>0)
+            debug:
+                indic [int]: indicates which branch of if-else was chosen at every time step
+                RuntimeDG [int]: indicates how many time steps the diesel generator was running
+            allSOCs [dict]: time series of the SOC of every battery of the tank
+    """
+    TimeArray = pd.to_datetime(dfIN["Time"])
+    P_L = dfIN["Load"]
+    P_green = dfIN["Green Prod"]
+
+    assert(len(TimeArray) == len(P_L) == len(P_green))
+    
+    # time series
+    # --------------------------------------------------------------------------------------------
+    P_net = P_green - P_L  # Production - Load power (kW).
+
+    P_L_modif = []      # [kW] clipped electrical load
+    P_grid = []         # [kW] Grid OUTPUT power (<0 when selling and >0 when buying)
+    P_bat = []          # [kW] Battery OUTPUT power (<0 when charging and >0 when discharging).
+    SOC = []            # [%]  State-of-charge of the whole stock of batteries (0 to 1).
+    P_diesel = []       # [kW] Power supplied by the Diesel Generator (>=0).
+    F_C = []            # [L]  Fuel remaining in the tank (L)
+    grid_state_long = np.concatenate((grid_1.state,grid_1.state[:int(forecast_period/dt)]))
+    
+    # debug & details
+    # --------------------------------------------------------------------------------------------
+    indic = [] # indicates in which if/else branch each time step is
+    allSOCs = {} # saves the timeserie of every SOC of every battery
+    for k in range(len(BattStock.battery_stock)):
+        allSOCs['bat_'+str(k)] = []
+    # BattStocks_debug = []
+
+    RuntimeDG = []
+
+    # SIMULATION
+    # --------------------------------------------------------------------------------------------
+    for i in range(len(TimeArray)):
+        for j,bat_name in enumerate(allSOCs.keys()):
+            allSOCs[bat_name].append(BattStock.battery_stock[j].SOC)
+        F_C.append(DG_1.FuelRate)
+        SOC.append(BattStock.get_SOC())
+        RuntimeDG.append(DG_1.cur_runtime)
+
+        if P_net[i] >= 0:                                                                                            # green power excess
+            P_L_modif.append(P_L[i])
+            P_diesel.append(0)
+            DG_1.cur_runtime = 0
+            if BattStock.get_SOC() < BattStock.get_SOC('max'):                                                       # battery charging
+                Pbat_ch_i = BattStock.battery_stock_charge(P_net[i],dt)
+                P_bat.append(- Pbat_ch_i)
+                P_grid.append(- P_net[i] + Pbat_ch_i if grid_1.state[i]==1 else 0) # remaining power to the grid if connected
+                # P_resistor.append(P_net[i] - Pbat_ch_i) # renewable prod clipping
+                indic.append(1)
+            elif grid_1.state[i]:                                                                                    # selling to the grid
+                P_grid.append(- P_net[i])
+                P_bat.append(0)
+                # P_resistor.append(0)
+                indic.append(2)
+            else :                                                                                                   # battery full and grid unavailable : resistor
+                P_grid.append(0)
+                P_bat.append(0)
+                # P_resistor.append(P_net[i]) # renewable prod clipping
+                indic.append(3)
+        else :                                                                                                       # green power deficit
+            if abs(P_net[i]) <= BattStock.get_Pmax(dt, 'dis') and not 0 < DG_1.cur_runtime < DG_1.MinimumRuntime:    # battery discharging
+                # battery power sufficient
+                # print('bchar   max',get_Pmax(BattStock,dt,'dis'),'pnet',abs(P_net[i]),'P_bat',get_Pbat(BattStock,abs(P_net[i]),dt))
+                Pbat_dis_i = BattStock.battery_stock_discharge(abs(P_net[i]), dt)
+                # print('achar   max',get_Pmax(BattStock,dt,'dis'),'P_bat_real',Pbat_dis_i,'P_bat_sim',get_Pbat(BattStock,abs(P_net[i]),dt))
+                # if Pbat_dis_i < abs(P_net[i]):
+                #     BattStocks_debug.append([[copy.deepcopy(b) for b in BattStock], P_net[i], dt])
+                #     print('idx',i,'time', time[i],'p_disch', Pbat_dis_i, 'soc', get_SOC(BattStock,'soc'))
+                # assert(Pbat_dis_i == abs(P_net[i]))
+                P_L_modif.append(P_L[i] if grid_1.state[i] == 1 else P_green[i] + Pbat_dis_i)
+                P_grid.append(- P_net[i] - Pbat_dis_i if grid_1.state[i] == 1 else 0)
+                P_bat.append(Pbat_dis_i)
+                P_diesel.append(0)
+                DG_1.cur_runtime = 0
+                # P_resistor.append(0)
+                indic.append(4)
+            elif DG_1.cur_runtime < DG_1.MinimumRuntime or grid_1.state[i] == 0:                                     # running DG
+                P_DG_asked = DG_1.Pnom if strat.lower()=='cce' else abs(P_net[i])
+                F_Cons, Pdiesel_i = DG_1.run_DG(P_DG_asked, dt, ActiveDevices["DieselGenerator"])
+                P_diesel.append(Pdiesel_i)
+                DG_1.cur_runtime += dt
+                DG_1.FuelRate -= F_Cons * dt / DG_1.TankCapacity
+                if Pdiesel_i < abs(P_net[i]):                                                                        # DG power unsufficient
+                    Pbat_dis_i = BattStock.battery_stock_discharge(abs(P_net[i]) - Pdiesel_i, dt)
+                    P_bat.append(Pbat_dis_i)
+                    P_grid.append(abs(P_net[i]) - Pdiesel_i - Pbat_dis_i if grid_1.state[i] == 1 else 0)
+                    P_L_modif.append(P_green[i] + Pdiesel_i + Pbat_dis_i + P_grid[i]) # load clipping
+                    # P_resistor.append(0)
+                    indic.append(5)
+                else :                                                                                               # DG power sufficient
+                    P_L_modif.append(P_L[i])
+                    Pbat_ch_i = BattStock.battery_stock_charge(Pdiesel_i + P_net[i], dt)
+                    # print('p_dg',Pdiesel_i,'soc',get_SOC(BattStock))
+                    P_bat.append(- Pbat_ch_i)
+                    P_grid.append(Pdiesel_i - abs(P_net[i]) - Pbat_ch_i if grid_1.state[i] == 1 else 0)
+                    indic.append(6)
+                    # P_resistor.append(P_green[-1] + P_bat[-1] + P_diesel[-1] - P_L_modif[-1]) # DG output clipping
+                # print(round(F_Cons * dt / DG_1.TankCapacity,3), round(DG_1.FuelRate,3))
+            # print('belif   max',get_Pmax(BattStock,dt,'dis'),'pnet',abs(P_net[i]),'P_bat',get_Pbat(BattStock,abs(P_net[i]),dt))
+            elif grid_1.state[i] == 1:                                                                               # purchasing from the grid
+                P_L_modif.append(P_L[i])
+                P_diesel.append(0)
+                DG_1.cur_runtime = 0
+                # P_resistor.append(0)
+                if forecast and (BattStock.get_SOC() < SOClim or 0 in grid_state_long[i:i+int(forecast_period/dt)]): # battery charging using grid
+                    Pmax_bat = BattStock.get_Pmax(dt, 'ch')
+                    Pbat_ch_i = BattStock.battery_stock_charge(Pmax_bat, dt)
+                    P_grid.append(Pbat_ch_i - P_net[i])
+                    P_bat.append(- Pbat_ch_i)
+                    indic.append(7)
+                else :                                                                                               # grid supplies load
+                    P_grid.append(abs(P_net[i]))
+                    P_bat.append(0)
+                    indic.append(8)
+            # else: every possibility should have already been processed (cf grid state 0 or 1)
+
+    # OUTPUT
+    # --------------------------------------------------------------------------------------------
+    P_L_modif = np.array(P_L_modif)
+    P_bat = np.array(P_bat)
+    P_grid = np.array(P_grid)
+    P_diesel = np.array(P_diesel)
+    F_C = np.array(F_C)
+    SOC = np.array(SOC)
+    P_net_modif = P_green - P_L_modif
+    P_diff = P_green + P_grid + P_bat + P_diesel - P_L
+    P_resistor = np.array([max(0,pow) for pow in P_diff])
+
+    RuntimeDG = np.array(RuntimeDG)
+
+    DictOut_TS = {"TimeArray":TimeArray, "P_L":P_L, "P_L_modif":P_L_modif, "P_green":P_green, "P_net":P_net, "P_net_modif":P_net_modif, 
+                  "P_diff":P_diff, "P_resistor":P_resistor, "indic":indic} # only time series
+    if ActiveDevices["Grid"]:
+        DictOut_TS["P_grid"] = P_grid
+    else:
+        assert(len(P_grid[abs(P_grid) > 10**(-14)]) == 0)
+    if ActiveDevices["Batteries"]:
+        DictOut_TS["P_bat"] = P_bat
+        DictOut_TS["SOC"] = SOC
+    else:
+        assert(len(P_bat[abs(P_bat) > 10**(-14)]) == 0)
+        assert(len(SOC[abs(SOC) > 10**(-14)]) == 0)
+    if ActiveDevices["DieselGenerator"]:
+        DictOut_TS["P_diesel"] = P_diesel
+        DictOut_TS["F_C"] = F_C
+        DictOut_TS["RuntimeDG"] = RuntimeDG
+    else:
+        assert(len(P_diesel[abs(P_diesel) > 10**(-14)]) == 0)
+        assert(len(F_C[abs(F_C) > 10**(-14)]) == 0)
+    dfOut_TS = pd.DataFrame(DictOut_TS)
+    return dfOut_TS, allSOCs
+
 def CostStrat(dfIN: pd.DataFrame, ActiveDevices: dict, grid_1: Grid, BattStock: BatteryStock, DG_1: DieselGenerator, dt: float, ChargeUsingGridCost: float=0, forecast: bool=False, forecast_period: float = 24) -> tuple[dict,dict]:
-    """Strategy based on costs dispatching routine.
+    """Strategy based on costs dispatching routine. 
+    Decisions are taken after the calculation of use costs of every device.
     
     Args:
         dfIN (pd.DataFrame): input dataframe. Content : "Time": list or np.array of datetime.datetime objects
@@ -443,7 +636,7 @@ if __name__ == "__main__":
     P_green = 10 * np.sin(x_axis) + 100     # non controlled power supply : solar panels, wind turbines... 
     P_L = 20 * np.cos(x_axis) + 100         # load demand
     GridStateNormal = np.array([1] * (num_steps - num_steps//2) + [0] * (num_steps//2), dtype=np.int64)  # grid reliable or not at t
-    df_TS = pd.DataFrame({"Time":TimeArray,"Load":P_L,"Green Prod": P_green, "Grid State": GridStateNormal}).set_index("Time")
+    df_TS = pd.DataFrame({"Time":TimeArray,"Load":P_L,"Green Prod": P_green, "Grid State": GridStateNormal})
 
     # all components allowed
     # ----------------------------------------------
@@ -452,7 +645,7 @@ if __name__ == "__main__":
     ActiveDevicesNormal = {"Grid": True, "Batteries": True, "DieselGenerator": True}
 
     # grid
-    GridNormal = Grid(GridStateNormal, pd.read_csv(Grid.GridPricesRef), pd.read_csv(Grid.GridScheduleRef)) 
+    GridNormal = Grid(GridStateNormal, pd.read_csv(Grid.GridPricesRef).set_index('Id'), pd.read_csv(Grid.GridScheduleRef)) 
 
     # batteries
     paramIn_batt = {'capacity':800,
@@ -478,23 +671,24 @@ if __name__ == "__main__":
     
     # diesel generator
     paramInDGNormal = {"Pmax":400,
-                   "Pnom":380,
-                   "Pmin":370,
-                   "TankCapacity":2000,
-                   "FuelRate":1,
-                   "f_r_min":0.1,
-                   "lifetime":200000,
-                   "ReplacementCost":10000,
-                   "MaintenanceCost":0.08,
-                   "FuelPrice":1.5}
+        "Pnom":380,
+        "Pmin":370,
+        "TankCapacity":2000,
+        "FuelRate":1,
+        "f_r_min":0.1,
+        "lifetime":200000,
+        "ReplacementCost":10000,
+        "MaintenanceCost":0.08,
+        "FuelPrice":1.5
+    }
     
     DGNormal = DieselGenerator(paramInDGNormal)
     DGNormal.find_DG_coeffs()
 
     # --- simulations ---
     dfResNormalCostStrat, allSOCsCostStrat = CostStrat(df_TS, ActiveDevicesNormal, GridNormal, BattStockNormal, DGNormal, dt, 0.1, True, 48)
-    dfResNormalLFE, allSOCsLFE = LFE_CCE("lfe", df_TS, ActiveDevicesNormal, GridNormal, BattStockNormal, DGNormal, dt, 0.5, True, 48)
-    dfResNormalCCE, allSOCsCCE = LFE_CCE("cce", df_TS, ActiveDevicesNormal, GridNormal, BattStockNormal, DGNormal, dt, 0.5, True, 48)
+    dfResNormalLFE, allSOCsLFE = LFE_CCE_emergency_system("lfe", df_TS, ActiveDevicesNormal, GridNormal, BattStockNormal, DGNormal, dt, 0.5, True, 48)
+    dfResNormalCCE, allSOCsCCE = LFE_CCE_emergency_system("cce", df_TS, ActiveDevicesNormal, GridNormal, BattStockNormal, DGNormal, dt, 0.5, True, 48)
 
     TSA.plot_compact(dfResNormalCostStrat, "test_output", False, False, False, True)
     TSA.plot_compact(dfResNormalLFE, "test_output", False, False, False, True)
@@ -509,7 +703,7 @@ if __name__ == "__main__":
 
     # grid
     GridState = np.array([0] * num_steps)
-    GridEmpty = Grid(GridState, pd.read_csv(Grid.GridPricesRef), pd.read_csv(Grid.GridScheduleRef))
+    GridEmpty = Grid(GridState, pd.read_csv(Grid.GridPricesRef).set_index('Id'), pd.read_csv(Grid.GridScheduleRef))
 
     # batteries
     BattStockEmpty = BatteryStock([Battery({
@@ -543,8 +737,8 @@ if __name__ == "__main__":
 
     # --- simulations ---
     dfResEmptyCostStrat, allSOCs = CostStrat(df_TS, ActiveDevicesEmpty, GridEmpty, BattStockEmpty, DGEmpty, dt, 0.1, True, 48)
-    dfResEmptyLFE, allSOCs = LFE_CCE("lfe", df_TS, ActiveDevicesEmpty, GridEmpty, BattStockEmpty, DGEmpty, dt, 0.5, True, 48)
-    dfResEmptyCCE, allSOCs = LFE_CCE("cce", df_TS, ActiveDevicesEmpty, GridEmpty, BattStockEmpty, DGEmpty, dt, 0.5, True, 48)
+    dfResEmptyLFE, allSOCs = LFE_CCE_emergency_system("lfe", df_TS, ActiveDevicesEmpty, GridEmpty, BattStockEmpty, DGEmpty, dt, 0.5, True, 48)
+    dfResEmptyCCE, allSOCs = LFE_CCE_emergency_system("cce", df_TS, ActiveDevicesEmpty, GridEmpty, BattStockEmpty, DGEmpty, dt, 0.5, True, 48)
 
     TSA.plot_compact(dfResEmptyCostStrat, "test_output", False, False, False, True)
     TSA.plot_compact(dfResEmptyLFE, "test_output", False, False, False, True)
