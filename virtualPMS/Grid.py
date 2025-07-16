@@ -42,7 +42,7 @@ class Grid:
         if self.state[time_step] == 0: # the grid is cut-off
             return 0
         else :
-            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month -1] # off-peak ? medium power ? peak hour ?
+            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month] # off-peak ? medium power ? peak hour ?
             # print("price_zone", price_zone)
             return self.prices["Selling price (euros/kWh)"][price_zone] # matching price
     
@@ -60,7 +60,7 @@ class Grid:
             return np.inf
         else:
             # print('date =', time_array[time_step], 'hour =', time_array[time_step].hour + 1, 'month =', time_array[time_step].month)
-            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month - 1] # off-peak ? medium power ? peak hour ?
+            price_zone = self.schedule.iloc[time_array[time_step].hour, time_array[time_step].month] # off-peak ? medium power ? peak hour ?
             # print("price_zone", price_zone)
             return self.prices["Buying price (euros/kWh)"][price_zone] # matching price
 
@@ -77,7 +77,7 @@ if __name__=='__main__':
     num_steps = int(20 / dt) # 20 hours
     time = np.array([start_date + timedelta(hours=i * dt) for i in range(20)])
 
-    GridPrices = pd.read_csv(Grid.GridPricesRef)
+    GridPrices = pd.read_csv(Grid.GridPricesRef).set_index('Id')
     GridSchedule = pd.read_csv(Grid.GridScheduleRef)
     GridState = np.array([1] * (num_steps - num_steps//2) + [0] * (num_steps//2), dtype=np.int64)  # grid reliable or not at t
     GridTest = Grid(GridState, GridPrices, GridSchedule)

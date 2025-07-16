@@ -1,4 +1,4 @@
-Consumption Mode,Buying price (euros/kWh),Selling price (euros/kWh)
-Off+AC0-Peak (1),0.054,0.08
-Medium Power (2),0.06,0.08
-Peak Hours (3),0.072,0.08
+Consumption Mode,Id,Buying price (euros/kWh),Selling price (euros/kWh)
+Off-Peak,1,0.054,0.08
+Medium Power,2,0.06,0.08
+Peak Hours,3,0.072,0.08
